@@ -1,0 +1,14 @@
+services:
+
+  database:
+    image: postgres:16
+    container_name: payarr-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: payarr
+      POSTGRES_USER: payarr
+      POSTGRES_PASSWORD: payarrpassword
+    volumes:
+      - ./database:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
