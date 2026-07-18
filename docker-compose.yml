@@ -1,4 +1,13 @@
 services:
+  backend:
+    build:
+      context: ./backend
+    container_name: payarr-backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+    restart: unless-stopped
 
   database:
     image: postgres:16
