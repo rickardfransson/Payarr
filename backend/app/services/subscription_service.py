@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 from sqlalchemy.orm import Session
 
@@ -9,10 +9,12 @@ def create_subscription(
     db: Session,
     user_id: int,
 ):
+    now = datetime.now()
+
     subscription = Subscription(
         user_id=user_id,
-        start_date=datetime.now(timezone.utc),
-        end_date=datetime.now(timezone.utc) + timedelta(days=30),
+        start_date=now,
+        end_date=now + timedelta(days=30),
         active=True,
         auto_renew=False,
     )
@@ -23,12 +25,13 @@ def create_subscription(
 
     return subscription
 
+
 def extend_subscription(
     db: Session,
     subscription: Subscription,
     days: int = 30,
 ):
-    now = datetime.now(timezone.utc)
+    now = datetime.now()
 
     # Om abonnemanget redan gått ut börjar vi från idag
     if subscription.end_date < now:
@@ -43,10 +46,11 @@ def extend_subscription(
 
     return subscription
 
+
 def is_subscription_active(
     subscription: Subscription,
 ):
-    now = datetime.now(timezone.utc)
+    now = datetime.now()
 
     return (
         subscription.active
