@@ -5,6 +5,8 @@ class Settings(BaseSettings):
     APP_NAME: str = "Payarr"
     APP_VERSION: str = "0.1.0"
 
+    SECRET_KEY: str
+
     DATABASE_HOST: str = "database"
     DATABASE_PORT: int = 5432
     DATABASE_NAME: str = "payarr"

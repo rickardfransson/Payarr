@@ -5,6 +5,8 @@ from app.core.config import settings
 from app.core.logging import setup_logging, get_logger
 from app.database.session import engine
 from app.routers import users
+from app.routers import auth
+from app.routers import profile
 
 
 # Starta loggning
@@ -19,7 +21,8 @@ app = FastAPI(
 )
 
 app.include_router(users.router)
-
+app.include_router(auth.router)
+app.include_router(profile.router)
 
 @app.on_event("startup")
 def startup_event():
