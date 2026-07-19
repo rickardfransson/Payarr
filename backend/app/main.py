@@ -7,6 +7,7 @@ from app.database.session import engine
 from app.routers import users
 from app.routers import auth
 from app.routers import profile
+from app.routers import admin
 
 
 # Starta loggning
@@ -23,6 +24,7 @@ app = FastAPI(
 app.include_router(users.router)
 app.include_router(auth.router)
 app.include_router(profile.router)
+app.include_router(admin.router)
 
 @app.on_event("startup")
 def startup_event():
