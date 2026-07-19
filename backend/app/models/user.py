@@ -5,6 +5,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
 
+from sqlalchemy.orm import relationship
+
 
 class User(Base):
     __tablename__ = "users"
@@ -46,8 +48,16 @@ class User(Base):
         default=datetime.utcnow
     )
 
+    subscription = relationship(
+    "Subscription",
+    back_populates="user",
+    uselist=False,
+    )
+
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )
+
+    
