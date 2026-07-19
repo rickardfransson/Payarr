@@ -4,6 +4,7 @@ from sqlalchemy import text
 from app.core.config import settings
 from app.core.logging import setup_logging, get_logger
 from app.database.session import engine
+from app.routers import users
 
 
 # Starta loggning
@@ -16,6 +17,8 @@ app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
 )
+
+app.include_router(users.router)
 
 
 @app.on_event("startup")
