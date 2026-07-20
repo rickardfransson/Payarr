@@ -3,6 +3,14 @@ from fastapi import APIRouter
 from app.services.emby import EmbyClient
 from app.schemas.emby import EmbyUser
 
+from sqlalchemy.orm import Session
+
+from app.database.session import get_database
+from app.models.user import User
+from app.services.emby_sync_service import EmbySyncService
+
+from fastapi import Depends, HTTPException
+
 router = APIRouter(
     prefix="/emby",
     tags=["Emby"],
@@ -31,3 +39,19 @@ async def get_emby_users():
         }
         for user in users
     ]
+@router.post("/sync/{user_id}")
+async def sync_user(
+    user_id: int,
+    db: Session = Depends(get_database),
+):
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    service = EmbySyncService()
+
+    return await service.sync_user(db, user)
