@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.models.user import User
 from app.services.emby import EmbyClient
+from app.repositories.emby_sync_log import create_sync_log
 
 
 class EmbySyncService:
@@ -72,6 +73,16 @@ class EmbySyncService:
 
         else:
             action = "none"
+
+        if action != "none":
+            create_sync_log(
+                db=db,
+                user_id=user.id,
+                emby_user_id=emby_id,
+                action=action,
+                status="pending",
+                message=f"Sync decision: {action}"
+            )
 
         return {
             "success": True,
