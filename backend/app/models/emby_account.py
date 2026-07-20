@@ -9,7 +9,11 @@ from app.database.base import Base
 class EmbyAccount(Base):
     __tablename__ = "emby_accounts"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
 
     user_id = Column(
         Integer,
@@ -29,9 +33,19 @@ class EmbyAccount(Base):
         nullable=False
     )
 
-    active = Column(
+    enabled = Column(
         Boolean,
         default=True
+    )
+
+    status = Column(
+        String(50),
+        default="active"
+    )
+
+    last_sync = Column(
+        DateTime,
+        nullable=True
     )
 
     created = Column(
@@ -44,7 +58,6 @@ class EmbyAccount(Base):
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )
-
 
     user = relationship(
         "User",

@@ -16,10 +16,6 @@ class Subscription(Base):
         unique=True,
     )
 
-    emby_user_id: Mapped[str | None] = mapped_column(
-        String(100),
-        nullable=True,
-    )
 
     start_date: Mapped[datetime] = mapped_column(DateTime)
 
