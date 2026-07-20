@@ -8,6 +8,7 @@ from app.database.base import Base
 from sqlalchemy.orm import relationship
 
 
+
 class User(Base):
     __tablename__ = "users"
 
@@ -59,5 +60,10 @@ class User(Base):
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )
+emby_account = relationship(
+    "EmbyAccount",
+    back_populates="user",
+    uselist=False
+)
 
     
