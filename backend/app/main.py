@@ -9,6 +9,7 @@ from app.routers import auth
 from app.routers import profile
 from app.routers import admin
 from app.routers import subscriptions
+from app.routers import emby
 
 
 # Starta loggning
@@ -29,6 +30,11 @@ app.include_router(admin.router)
 app.include_router(
     subscriptions.router
 )
+app.include_router(
+    emby.router,
+    prefix="/api/v1",
+)
+
 
 @app.on_event("startup")
 def startup_event():

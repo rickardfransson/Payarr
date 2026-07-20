@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     DATABASE_NAME: str = "payarr"
     DATABASE_USER: str = "payarr"
     DATABASE_PASSWORD: str = "payarrpassword"
+    EMBY_URL: str
+    EMBY_API_KEY: str
 
     model_config = SettingsConfigDict(
         env_file=".env",
