@@ -8,6 +8,11 @@ from app.database.session import get_database
 from app.models.emby_account import EmbyAccount
 from app.schemas.emby_account import EmbyAccountResponse
 from app.schemas.emby_link import EmbyAccountLink
+from app.models.subscription import Subscription
+from app.schemas.emby_status import EmbyStatusResponse
+from app.services.emby import EmbyClient
+from app.schemas.emby_sync_preview import EmbySyncPreview
+from app.services.emby import EmbyClient
 
 
 router = APIRouter(
@@ -83,3 +88,112 @@ def link_account(
     db.refresh(account)
 
     return account
+
+@router.get(
+    "/{user_id}/status",
+    response_model=EmbyStatusResponse
+)
+def get_emby_status(
+    user_id: int,
+    db: Session = Depends(get_database)
+):
+
+    account = db.query(EmbyAccount).filter(
+        EmbyAccount.user_id == user_id
+    ).first()
+
+    if not account:
+        raise HTTPException(
+            status_code=404,
+            detail="No Emby account linked"
+        )
+
+    subscription = db.query(Subscription).filter(
+        Subscription.user_id == user_id
+    ).first()
+
+    subscription_active = False
+
+    if subscription:
+        subscription_active = subscription.active
+
+    return {
+        "user_id": user_id,
+        "emby_user_id": account.emby_user_id,
+        "emby_username": account.emby_username,
+        "emby_account_active": account.active,
+        "subscription_active": subscription_active,
+    }
+@router.get(
+    "/{user_id}/details"
+)
+async def get_emby_details(
+    user_id: int,
+    db: Session = Depends(get_database)
+):
+
+    account = db.query(EmbyAccount).filter(
+        EmbyAccount.user_id == user_id
+    ).first()
+
+    if not account:
+        raise HTTPException(
+            status_code=404,
+            detail="No Emby account linked"
+        )
+
+    client = EmbyClient()
+
+    emby_user = await client.get_user(
+        account.emby_user_id
+    )
+
+    return emby_user
+
+@router.get(
+    "/{user_id}/sync-preview",
+    response_model=EmbySyncPreview
+)
+async def sync_preview(
+    user_id: int,
+    db: Session = Depends(get_database)
+):
+
+    account = db.query(EmbyAccount).filter(
+        EmbyAccount.user_id == user_id
+    ).first()
+
+    if not account:
+        raise HTTPException(
+            status_code=404,
+            detail="No Emby account linked"
+        )
+
+    subscription = db.query(Subscription).filter(
+        Subscription.user_id == user_id
+    ).first()
+
+    subscription_active = False
+
+    if subscription:
+        subscription_active = subscription.active
+
+    client = EmbyClient()
+    emby_user = await client.get_user(account.emby_user_id)
+
+    emby_is_disabled = emby_user["Policy"]["IsDisabled"]
+
+    if subscription_active and emby_is_disabled:
+        action = "Enable Emby account"
+
+    elif not subscription_active and not emby_is_disabled:
+        action = "Disable Emby account"
+
+    else:
+        action = "No action required"
+
+    return {
+        "subscription_active": subscription_active,
+        "emby_is_disabled": emby_is_disabled,
+        "action": action
+    }
