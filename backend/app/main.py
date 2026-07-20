@@ -10,6 +10,7 @@ from app.routers import profile
 from app.routers import admin
 from app.routers import subscriptions
 from app.routers import emby
+from app.routers import emby_accounts
 
 
 # Starta loggning
@@ -33,6 +34,10 @@ app.include_router(
 app.include_router(
     emby.router,
     prefix="/api/v1",
+)
+app.include_router(
+    emby_accounts.router,
+    prefix="/api/v1"
 )
 
 

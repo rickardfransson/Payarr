@@ -1,12 +1,9 @@
 from datetime import datetime
 
 from sqlalchemy import String, Boolean, DateTime
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
-
-from sqlalchemy.orm import relationship
-
 
 
 class User(Base):
@@ -49,21 +46,20 @@ class User(Base):
         default=datetime.utcnow
     )
 
-    subscription = relationship(
-    "Subscription",
-    back_populates="user",
-    uselist=False,
-    )
-
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )
-emby_account = relationship(
-    "EmbyAccount",
-    back_populates="user",
-    uselist=False
-)
 
-    
+    subscription = relationship(
+        "Subscription",
+        back_populates="user",
+        uselist=False,
+    )
+
+    emby_account = relationship(
+        "EmbyAccount",
+        back_populates="user",
+        uselist=False,
+    )
