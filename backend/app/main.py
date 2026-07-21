@@ -47,6 +47,13 @@ app.include_router(
     prefix="/api/v1"
 )
 
+from app.routers import admin_emby
+
+app.include_router(
+    admin_emby.router,
+    prefix="/api/v1",
+)
+
 
 @app.on_event("startup")
 def startup_event():
