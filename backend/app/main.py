@@ -12,6 +12,7 @@ from app.routers import admin
 from app.routers import subscriptions
 from app.routers import emby
 from app.routers import emby_accounts
+from app.routers import admin_payments
 
 from app.services.scheduler import (
     start_scheduler,
@@ -52,6 +53,10 @@ from app.routers import admin_emby
 app.include_router(
     admin_emby.router,
     prefix="/api/v1",
+)
+app.include_router(
+    admin_payments.router,
+    prefix="/api/v1"
 )
 
 

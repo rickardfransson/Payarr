@@ -58,6 +58,11 @@ class User(Base):
         uselist=False,
     )
 
+    payments = relationship(
+    "Payment",
+    back_populates="user",
+    )
+
     emby_account = relationship(
         "EmbyAccount",
         back_populates="user",
