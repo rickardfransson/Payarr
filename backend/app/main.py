@@ -13,6 +13,7 @@ from app.routers import subscriptions
 from app.routers import emby
 from app.routers import emby_accounts
 from app.routers import admin_payments
+from app.routers import payment_webhook
 
 from app.services.scheduler import (
     start_scheduler,
@@ -56,6 +57,10 @@ app.include_router(
 )
 app.include_router(
     admin_payments.router,
+    prefix="/api/v1"
+)
+app.include_router(
+    payment_webhook.router,
     prefix="/api/v1"
 )
 
