@@ -8,6 +8,8 @@ from app.schemas.emby_log import EmbyLogResponse
 from app.services.emby_log_service import EmbyLogService
 from app.schemas.emby_sync_run import EmbySyncRunResponse
 from app.services.emby_manual_sync import EmbyManualSyncService
+from app.schemas.emby_user_status import EmbyUserStatusResponse
+from app.services.emby_user_status_service import EmbyUserStatusService
 
 router = APIRouter(
     prefix="/admin/emby",
@@ -38,3 +40,11 @@ async def run_emby_sync(
     db: Session = Depends(get_db),
 ):
     return await EmbyManualSyncService.run(db)
+@router.get(
+    "/users",
+    response_model=list[EmbyUserStatusResponse],
+)
+def get_emby_users(
+    db: Session = Depends(get_db),
+):
+    return EmbyUserStatusService.get_users(db)
