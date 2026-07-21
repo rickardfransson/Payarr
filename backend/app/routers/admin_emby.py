@@ -44,7 +44,9 @@ async def run_emby_sync(
     "/users",
     response_model=list[EmbyUserStatusResponse],
 )
-def get_emby_users(
+async def get_emby_users(
     db: Session = Depends(get_db),
 ):
-    return EmbyUserStatusService.get_users(db)
+    service = EmbyUserStatusService()
+
+    return await service.get_users(db)

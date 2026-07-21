@@ -1,12 +1,16 @@
 from sqlalchemy.orm import Session
 
 from app.models.user import User
+from app.services.emby import EmbyClient
 
 
 class EmbyUserStatusService:
 
-    @staticmethod
-    def get_users(db: Session):
+    def __init__(self):
+        self.emby = EmbyClient()
+
+
+    async def get_users(self, db: Session):
 
         users = (
             db.query(User)
@@ -23,6 +27,29 @@ class EmbyUserStatusService:
             if user.subscription:
                 subscription_active = user.subscription.active
 
+
+            emby_active = False
+
+            try:
+                emby_user = await self.emby.get_user(
+                    user.emby_account.emby_user_id
+                )
+
+                if emby_user:
+                    policy = emby_user.get(
+                        "Policy",
+                        {}
+                    )
+
+                    emby_active = not policy.get(
+                        "IsDisabled",
+                        False
+                    )
+
+            except Exception:
+                emby_active = False
+
+
             result.append(
                 {
                     "user_id": user.id,
@@ -31,6 +58,7 @@ class EmbyUserStatusService:
                         user.emby_account.emby_username
                     ),
                     "subscription_active": subscription_active,
+                    "emby_active": emby_active,
                 }
             )
 

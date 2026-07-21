@@ -6,3 +6,4 @@ class EmbyUserStatusResponse(BaseModel):
     username: str
     emby_username: str
     subscription_active: bool
+    emby_active: bool
