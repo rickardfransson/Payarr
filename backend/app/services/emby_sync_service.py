@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy.orm import Session
 
 from app.models.user import User
@@ -6,8 +8,10 @@ from app.repositories.emby_sync_log import create_sync_log
 
 
 class EmbySyncService:
+
     def __init__(self):
         self.emby = EmbyClient()
+
 
     @staticmethod
     def should_be_enabled(user: User) -> bool:
@@ -18,14 +22,24 @@ class EmbySyncService:
         if user.subscription is None:
             return False
 
-        return user.subscription.active
+        if not user.subscription.active:
+            return False
 
-    async def sync_user(self, db: Session, user: User):
+        if user.subscription.end_date < datetime.utcnow():
+            return False
+
+        return True
+
+
+    async def sync_user(
+        self,
+        db: Session,
+        user: User
+    ):
         """
         Jämför Payarr-status mot Emby-status.
 
-        Gör inga ändringar i Emby ännu.
-        Returnerar endast rekommenderad åtgärd.
+        Skapar sync-jobb om Emby behöver ändras.
         """
 
         if user.emby_account is None:
@@ -35,12 +49,16 @@ class EmbySyncService:
                 "reason": "User is not linked to an Emby account"
             }
 
+
         emby_id = user.emby_account.emby_user_id
 
         desired_enabled = self.should_be_enabled(user)
 
+
         try:
-            emby_user = await self.emby.get_user(emby_id)
+            emby_user = await self.emby.get_user(
+                emby_id
+            )
 
         except Exception as e:
             return {
@@ -49,6 +67,7 @@ class EmbySyncService:
                 "reason": str(e)
             }
 
+
         if not emby_user:
             return {
                 "success": False,
@@ -56,7 +75,12 @@ class EmbySyncService:
                 "reason": "Emby user not found"
             }
 
-        policy = emby_user.get("Policy", {})
+
+        policy = emby_user.get(
+            "Policy",
+            {}
+        )
+
 
         currently_disabled = policy.get(
             "IsDisabled",
@@ -65,16 +89,25 @@ class EmbySyncService:
 
         currently_enabled = not currently_disabled
 
+
         if desired_enabled and currently_disabled:
+
             action = "enable"
 
+
         elif not desired_enabled and currently_enabled:
+
             action = "disable"
 
+
         else:
+
             action = "none"
 
+
+
         if action != "none":
+
             create_sync_log(
                 db=db,
                 user_id=user.id,
@@ -83,6 +116,7 @@ class EmbySyncService:
                 status="pending",
                 message=f"Sync decision: {action}"
             )
+
 
         return {
             "success": True,

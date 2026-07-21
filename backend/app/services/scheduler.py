@@ -3,6 +3,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from app.database.session import SessionLocal
 from app.services.sync_worker import SyncWorker
 from app.services.sync_job_processor import SyncJobProcessor
+from app.services.subscription_lifecycle_service import SubscriptionLifecycleService
 
 
 scheduler = AsyncIOScheduler()
@@ -13,6 +14,13 @@ async def run_sync_job():
     db = SessionLocal()
 
     try:
+        lifecycle = SubscriptionLifecycleService()
+
+        lifecycle_result = (
+            lifecycle.process_expired_subscriptions(db)
+        )
+
+
         worker = SyncWorker()
 
         worker_result = await worker.run(db)
@@ -25,6 +33,7 @@ async def run_sync_job():
 
         print(
             f"Automatic sync completed: "
+            f"lifecycle={lifecycle_result}, "
             f"worker={worker_result}, "
             f"processor={processor_result}"
         )
