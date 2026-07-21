@@ -13,12 +13,12 @@ router = APIRouter(
 
 
 @router.post("/create/{user_id}")
-def create_payment(
+async def create_payment(
     user_id: int,
     db: Session = Depends(get_db),
 ):
 
-    return PaymentService.create_payment(
+    return await PaymentService.create_payment(
         db=db,
         user_id=user_id,
         amount=100,
