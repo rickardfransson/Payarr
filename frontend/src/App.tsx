@@ -12,6 +12,8 @@ import AdminRoute from "./components/AdminRoute";
 
 import DashboardLayout from "./layout/DashboardLayout";
 
+import AdminLayout from "./admin/layout/AdminLayout";
+
 import AdminUsers from "./admin/pages/AdminUsers";
 import AdminDashboard from "./admin/pages/AdminDashboard";
 
@@ -43,21 +45,6 @@ function App() {
                 >
 
                     <Route
-    path="/admin"
-    element={
-        <ProtectedRoute>
-
-            <AdminRoute>
-
-                <AdminDashboard />
-
-            </AdminRoute>
-
-        </ProtectedRoute>
-    }
-/>
-
-                    <Route
                         index
                         element={<Dashboard />}
                     />
@@ -86,26 +73,38 @@ function App() {
                         element={<Account />}
                     />
 
-
                 </Route>
 
 
 
 
                 <Route
-                    path="/admin/users"
+                    path="/admin"
                     element={
                         <ProtectedRoute>
 
                             <AdminRoute>
 
-                                <AdminUsers />
+                                <AdminLayout />
 
                             </AdminRoute>
 
                         </ProtectedRoute>
                     }
-                />
+                >
+
+                    <Route
+                        index
+                        element={<AdminDashboard />}
+                    />
+
+
+                    <Route
+                        path="users"
+                        element={<AdminUsers />}
+                    />
+
+                </Route>
 
 
             </Routes>
