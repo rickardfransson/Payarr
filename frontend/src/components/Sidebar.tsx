@@ -1,9 +1,14 @@
 import { Link } from "react-router-dom";
 
+import { useAuth } from "../context/AuthContext";
+
 import "../styles/sidebar.css";
 
 
 function Sidebar() {
+
+    const { user } = useAuth();
+
 
     return (
         <aside className="sidebar">
@@ -46,12 +51,41 @@ function Sidebar() {
                     Emby
                 </Link>
 
+
                 <Link
-    className="sidebar-link"
-    to="/account"
->
-    Account
-</Link>
+                    className="sidebar-link"
+                    to="/account"
+                >
+                    Account
+                </Link>
+
+
+
+                {
+                    user?.role === "admin" && (
+
+                        <>
+
+                            <Link
+                                className="sidebar-link"
+                                to="/admin"
+                            >
+                                Admin Dashboard
+                            </Link>
+
+
+                            <Link
+                                className="sidebar-link"
+                                to="/admin/users"
+                            >
+                                Users
+                            </Link>
+
+                        </>
+
+                    )
+                }
+
 
             </nav>
 

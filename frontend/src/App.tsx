@@ -5,22 +5,32 @@ import Dashboard from "./pages/Dashboard";
 import Subscription from "./pages/Subscription";
 import Payments from "./pages/Payments";
 import Emby from "./pages/Emby";
+import Account from "./pages/Account";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
+
 import DashboardLayout from "./layout/DashboardLayout";
-import Account from "./pages/Account";
+
+import AdminUsers from "./admin/pages/AdminUsers";
+import AdminDashboard from "./admin/pages/AdminDashboard";
+
 
 
 function App() {
+
     return (
+
         <BrowserRouter>
 
             <Routes>
+
 
                 <Route
                     path="/login"
                     element={<Login />}
                 />
+
 
 
                 <Route
@@ -31,6 +41,21 @@ function App() {
                         </ProtectedRoute>
                     }
                 >
+
+                    <Route
+    path="/admin"
+    element={
+        <ProtectedRoute>
+
+            <AdminRoute>
+
+                <AdminDashboard />
+
+            </AdminRoute>
+
+        </ProtectedRoute>
+    }
+/>
 
                     <Route
                         index
@@ -55,18 +80,41 @@ function App() {
                         element={<Emby />}
                     />
 
+
                     <Route
-    path="account"
-    element={<Account />}
-/>
+                        path="account"
+                        element={<Account />}
+                    />
+
 
                 </Route>
 
 
+
+
+                <Route
+                    path="/admin/users"
+                    element={
+                        <ProtectedRoute>
+
+                            <AdminRoute>
+
+                                <AdminUsers />
+
+                            </AdminRoute>
+
+                        </ProtectedRoute>
+                    }
+                />
+
+
             </Routes>
 
+
         </BrowserRouter>
+
     );
+
 }
 
 

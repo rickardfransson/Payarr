@@ -20,6 +20,7 @@ from app.routers import (
     user_overview,
     btcpay_webhook,
     account,
+    admin_dashboard,
 )
 
 from app.services.scheduler import (
@@ -76,6 +77,10 @@ app.include_router(
 app.include_router(
     admin_payments.router,
     prefix="/api/v1",
+)
+
+app.include_router(
+    admin_dashboard.router,
 )
 
 app.include_router(
