@@ -16,6 +16,17 @@ class BTCPayClient:
         }
 
 
+    def is_configured(self):
+
+        return all(
+            [
+                self.base_url,
+                self.store_id,
+                settings.BTCPAY_API_KEY,
+            ]
+        )
+
+
     async def create_invoice(
         self,
         amount: float,
@@ -23,11 +34,18 @@ class BTCPayClient:
         metadata: dict | None = None,
     ):
 
+        if not self.is_configured():
+            raise Exception(
+                "BTCPay is not configured"
+            )
+
+
         payload = {
             "amount": amount,
             "currency": currency,
             "metadata": metadata or {},
         }
+
 
         async with httpx.AsyncClient() as client:
 
@@ -42,10 +60,17 @@ class BTCPayClient:
         return response.json()
 
 
+
     async def get_invoice(
         self,
         invoice_id: str,
     ):
+
+        if not self.is_configured():
+            raise Exception(
+                "BTCPay is not configured"
+            )
+
 
         async with httpx.AsyncClient() as client:
 
