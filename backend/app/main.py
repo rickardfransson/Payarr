@@ -1,22 +1,26 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
 from app.core.config import settings
 from app.core.logging import setup_logging, get_logger
 from app.database.session import engine
 
-from app.routers import users
-from app.routers import auth
-from app.routers import profile
-from app.routers import admin
-from app.routers import subscriptions
-from app.routers import emby
-from app.routers import emby_accounts
-from app.routers import admin_payments
-from app.routers import payment_webhook
-from app.routers import user_overview
-from app.routers import btcpay_webhook
-from app.routers import account
+from app.routers import (
+    users,
+    auth,
+    profile,
+    admin,
+    subscriptions,
+    emby,
+    emby_accounts,
+    admin_emby,
+    admin_payments,
+    payment_webhook,
+    user_overview,
+    btcpay_webhook,
+    account,
+)
 
 from app.services.scheduler import (
     start_scheduler,
@@ -35,7 +39,18 @@ app = FastAPI(
     version=settings.APP_VERSION,
 )
 
+# CORS för frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
+# Routers
 app.include_router(users.router)
 app.include_router(auth.router)
 app.include_router(profile.router)
@@ -50,28 +65,32 @@ app.include_router(
 
 app.include_router(
     emby_accounts.router,
-    prefix="/api/v1"
+    prefix="/api/v1",
 )
-
-from app.routers import admin_emby
 
 app.include_router(
     admin_emby.router,
     prefix="/api/v1",
 )
+
 app.include_router(
     admin_payments.router,
-    prefix="/api/v1"
+    prefix="/api/v1",
 )
+
 app.include_router(
     payment_webhook.router,
-    prefix="/api/v1"
+    prefix="/api/v1",
 )
+
 app.include_router(
     user_overview.router,
-    prefix="/api/v1"
+    prefix="/api/v1",
 )
-app.include_router(btcpay_webhook.router)
+
+app.include_router(
+    btcpay_webhook.router,
+)
 
 
 @app.on_event("startup")
@@ -110,7 +129,7 @@ def root():
 @app.get("/health")
 def health():
     return {
-        "status": "healthy"
+        "status": "healthy",
     }
 
 
@@ -125,7 +144,7 @@ def database_test():
 
         return {
             "database": "connected",
-            "result": result.scalar()
+            "result": result.scalar(),
         }
 
     except Exception as e:
@@ -136,5 +155,5 @@ def database_test():
 
         return {
             "database": "error",
-            "message": str(e)
+            "message": str(e),
         }
