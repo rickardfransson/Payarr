@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/client";
+import { useAuth } from "../context/AuthContext";
+
 
 function Login() {
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
+    
     const handleLogin = async () => {
         try {
             setError("");
@@ -16,6 +20,7 @@ function Login() {
             const data = new URLSearchParams();
             data.append("username", username);
             data.append("password", password);
+
 
             const response = await api.post(
                 "/auth/login",
@@ -28,50 +33,62 @@ function Login() {
                 }
             );
 
-            localStorage.setItem(
-                "access_token",
-                response.data.access_token
-            );
+
+            login(response.data.access_token);
 
             navigate("/");
+
         } catch (err) {
             console.error(err);
             setError("Fel användarnamn eller lösenord");
         }
     };
 
+
     return (
         <div style={{ padding: "40px" }}>
             <h1>Payarr Login</h1>
 
+
             <input
                 placeholder="Username"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) =>
+                    setUsername(e.target.value)
+                }
             />
 
+
             <br /><br />
+
 
             <input
                 type="password"
                 placeholder="Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) =>
+                    setPassword(e.target.value)
+                }
             />
 
+
             <br /><br />
+
 
             <button onClick={handleLogin}>
                 Logga in
             </button>
+
 
             {error && (
                 <p style={{ color: "red" }}>
                     {error}
                 </p>
             )}
+
         </div>
     );
 }
+
 
 export default Login;
