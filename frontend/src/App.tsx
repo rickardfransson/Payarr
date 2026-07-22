@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import DashboardLayout from "./layout/DashboardLayout";
 
 
 function App() {
@@ -22,10 +23,18 @@ function App() {
                     path="/"
                     element={
                         <ProtectedRoute>
-                            <Dashboard />
+                            <DashboardLayout />
                         </ProtectedRoute>
                     }
-                />
+                >
+
+                    <Route
+                        index
+                        element={<Dashboard />}
+                    />
+
+                </Route>
+
 
             </Routes>
 
