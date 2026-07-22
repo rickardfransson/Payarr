@@ -16,6 +16,7 @@ from app.routers import admin_payments
 from app.routers import payment_webhook
 from app.routers import user_overview
 from app.routers import btcpay_webhook
+from app.routers import account
 
 from app.services.scheduler import (
     start_scheduler,
@@ -40,6 +41,7 @@ app.include_router(auth.router)
 app.include_router(profile.router)
 app.include_router(admin.router)
 app.include_router(subscriptions.router)
+app.include_router(account.router)
 
 app.include_router(
     emby.router,
