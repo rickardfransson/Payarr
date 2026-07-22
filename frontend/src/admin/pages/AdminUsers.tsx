@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 import api from "../../api/client";
 
+import "../../styles/admin.css";
+
 
 interface User {
 
@@ -16,16 +18,13 @@ interface User {
         end_date: string;
     };
 
-
     emby?: {
         username: string;
     };
 
-
     last_payment?: {
         amount: number;
         status: string;
-        paid_at?: string;
     };
 
 }
@@ -49,7 +48,6 @@ function AdminUsers() {
                     "/admin/users"
                 );
 
-
                 setUsers(response.data);
 
 
@@ -59,6 +57,7 @@ function AdminUsers() {
                     "Kunde inte hämta användare",
                     error
                 );
+
 
             } finally {
 
@@ -70,6 +69,7 @@ function AdminUsers() {
 
 
         loadUsers();
+
 
     }, []);
 
@@ -91,143 +91,170 @@ function AdminUsers() {
 
     return (
 
-        <div>
+        <div className="admin-page">
 
-            <h1>
+
+            <h1 className="admin-title">
                 Admin - Users
             </h1>
 
 
 
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            ID
-                        </th>
-
-                        <th>
-                            Username
-                        </th>
-
-                        <th>
-                            Email
-                        </th>
-
-                        <th>
-                            Roll
-                        </th>
-
-                        <th>
-                            Aktiv
-                        </th>
-
-                        <th>
-                            Subscription
-                        </th>
-
-                        <th>
-                            Emby
-                        </th>
-
-                        <th>
-                            Betalning
-                        </th>
-
-                    </tr>
-
-                </thead>
+            <div className="admin-table-card">
 
 
-
-                <tbody>
-
-                    {
-                        users.map(user => (
-
-                            <tr
-                                key={user.id}
-                            >
-
-                                <td>
-                                    {user.id}
-                                </td>
+                <table className="admin-table">
 
 
-                                <td>
-                                    {user.username}
-                                </td>
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                ID
+                            </th>
+
+                            <th>
+                                Username
+                            </th>
+
+                            <th>
+                                Email
+                            </th>
+
+                            <th>
+                                Roll
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Subscription
+                            </th>
+
+                            <th>
+                                Emby
+                            </th>
+
+                            <th>
+                                Betalning
+                            </th>
+
+                        </tr>
+
+                    </thead>
 
 
-                                <td>
-                                    {user.email}
-                                </td>
+
+                    <tbody>
 
 
-                                <td>
-                                    {user.role}
-                                </td>
+                        {
+                            users.map(user => (
 
-
-                                <td>
-                                    {
-                                        user.active
-                                            ? "Ja"
-                                            : "Nej"
+                                <tr
+                                    key={user.id}
+                                    onClick={() =>
+                                        window.location.href =
+                                        `/admin/users/${user.id}`
                                     }
-                                </td>
+                                    style={{
+                                        cursor: "pointer"
+                                    }}
+                                >
 
 
-                                <td>
+                                    <td>
+                                        {user.id}
+                                    </td>
 
-                                    {
-                                        user.subscription
-                                            ? (
-                                                user.subscription.active
+
+                                    <td>
+                                        {user.username}
+                                    </td>
+
+
+                                    <td>
+                                        {user.email}
+                                    </td>
+
+
+                                    <td className="admin-role">
+                                        {user.role}
+                                    </td>
+
+
+                                    <td>
+
+                                        <span
+                                            className={
+                                                user.active
+                                                    ? "admin-status active"
+                                                    : "admin-status inactive"
+                                            }
+                                        >
+                                            {
+                                                user.active
                                                     ? "Aktiv"
                                                     : "Inaktiv"
-                                            )
-                                            : "-"
-                                    }
+                                            }
+                                        </span>
 
-                                </td>
-
-
-                                <td>
-
-                                    {
-                                        user.emby
-                                            ? user.emby.username
-                                            : "-"
-                                    }
-
-                                </td>
+                                    </td>
 
 
-                                <td>
+                                    <td>
 
-                                    {
-                                        user.last_payment
-                                            ? `${user.last_payment.amount} SEK`
-                                            : "-"
-                                    }
+                                        {
+                                            user.subscription
+                                                ? (
+                                                    user.subscription.active
+                                                        ? "Aktiv"
+                                                        : "Inaktiv"
+                                                )
+                                                : "-"
+                                        }
 
-                                </td>
-
-
-                            </tr>
-
-                        ))
-                    }
+                                    </td>
 
 
-                </tbody>
+                                    <td>
+
+                                        {
+                                            user.emby
+                                                ? user.emby.username
+                                                : "-"
+                                        }
+
+                                    </td>
 
 
-            </table>
+                                    <td>
+
+                                        {
+                                            user.last_payment
+                                                ? `${user.last_payment.amount} SEK`
+                                                : "-"
+                                        }
+
+                                    </td>
+
+
+                                </tr>
+
+                            ))
+                        }
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
 
 
         </div>

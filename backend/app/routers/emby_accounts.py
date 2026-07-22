@@ -197,3 +197,68 @@ async def sync_preview(
         "emby_is_disabled": emby_is_disabled,
         "action": action
     }
+
+@router.post(
+    "/{user_id}/enable"
+)
+async def enable_emby_account(
+    user_id: int,
+    db: Session = Depends(get_database)
+):
+
+    account = db.query(EmbyAccount).filter(
+        EmbyAccount.user_id == user_id
+    ).first()
+
+    if not account:
+        raise HTTPException(
+            status_code=404,
+            detail="No Emby account linked"
+        )
+
+
+    client = EmbyClient()
+
+    await client.enable_user(
+        account.emby_user_id
+    )
+
+
+    return {
+        "success": True,
+        "message": "Emby account enabled"
+    }
+
+
+
+
+@router.post(
+    "/{user_id}/disable"
+)
+async def disable_emby_account(
+    user_id: int,
+    db: Session = Depends(get_database)
+):
+
+    account = db.query(EmbyAccount).filter(
+        EmbyAccount.user_id == user_id
+    ).first()
+
+    if not account:
+        raise HTTPException(
+            status_code=404,
+            detail="No Emby account linked"
+        )
+
+
+    client = EmbyClient()
+
+    await client.disable_user(
+        account.emby_user_id
+    )
+
+
+    return {
+        "success": True,
+        "message": "Emby account disabled"
+    }

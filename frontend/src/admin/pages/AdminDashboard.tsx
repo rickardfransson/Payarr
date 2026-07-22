@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import api from "../../api/client";
 import StatCard from "../../components/StatCard";
 
+import "../../styles/admin.css";
+
 
 interface DashboardData {
 
@@ -51,6 +53,7 @@ function AdminDashboard() {
                     error
                 );
 
+
             } finally {
 
                 setLoading(false);
@@ -83,59 +86,76 @@ function AdminDashboard() {
 
     return (
 
-        <div>
+        <div className="admin-page">
 
-            <h1>
+
+            <h1 className="admin-title">
                 Admin Dashboard
             </h1>
 
 
 
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(4, 1fr)",
-                    gap: "20px",
-                    marginTop: "30px"
-                }}
-            >
-
-                <StatCard
-                    title="Users"
-                    value={
-                        String(data?.users ?? 0)
-                    }
-                />
+            <div className="admin-grid">
 
 
-                <StatCard
-                    title="Aktiva subscription"
-                    value={
-                        String(
-                            data?.active_subscriptions ?? 0
-                        )
-                    }
-                />
+                <div className="admin-card">
+
+                    <StatCard
+                        title="Users"
+                        value={
+                            String(data?.users ?? 0)
+                        }
+                    />
+
+                </div>
 
 
-                <StatCard
-                    title="Payments"
-                    value={
-                        String(
-                            data?.payments_total ?? 0
-                        )
-                    }
-                />
+
+                <div className="admin-card">
+
+                    <StatCard
+                        title="Aktiva subscription"
+                        value={
+                            String(
+                                data?.active_subscriptions ?? 0
+                            )
+                        }
+                    />
+
+                </div>
 
 
-                <StatCard
-                    title="Emby Accounts"
-                    value={
-                        String(
-                            data?.emby_accounts ?? 0
-                        )
-                    }
-                />
+
+
+                <div className="admin-card">
+
+                    <StatCard
+                        title="Payments"
+                        value={
+                            String(
+                                data?.payments_total ?? 0
+                            )
+                        }
+                    />
+
+                </div>
+
+
+
+
+                <div className="admin-card">
+
+                    <StatCard
+                        title="Emby Accounts"
+                        value={
+                            String(
+                                data?.emby_accounts ?? 0
+                            )
+                        }
+                    />
+
+                </div>
+
 
 
             </div>

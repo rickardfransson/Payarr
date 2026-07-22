@@ -16,7 +16,8 @@ import AdminLayout from "./admin/layout/AdminLayout";
 
 import AdminUsers from "./admin/pages/AdminUsers";
 import AdminDashboard from "./admin/pages/AdminDashboard";
-
+import AdminUserDetails from "./admin/pages/AdminUserDetails";
+import AdminEmby from "./admin/pages/AdminEmby";
 
 
 function App() {
@@ -98,11 +99,21 @@ function App() {
                         element={<AdminDashboard />}
                     />
 
+                    <Route
+    path="emby"
+    element={<AdminEmby />}
+/>
+
 
                     <Route
                         path="users"
                         element={<AdminUsers />}
                     />
+
+                    <Route
+    path="users/:id"
+    element={<AdminUserDetails />}
+/>
 
                 </Route>
 

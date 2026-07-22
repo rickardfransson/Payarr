@@ -1,0 +1,121 @@
+.admin-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+.admin-title {
+    margin-bottom: 10px;
+}
+
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(280px, 1fr)
+    );
+    gap: 20px;
+}
+
+
+.admin-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+
+.admin-card h2 {
+    margin-top: 0;
+    font-size: 18px;
+}
+
+
+.admin-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+
+.admin-label {
+    font-weight: 600;
+}
+
+
+.admin-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+
+.admin-button {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+
+.admin-button:hover {
+    opacity: 0.85;
+}
+
+.admin-table-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    overflow-x: auto;
+}
+
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+
+.admin-table th {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+
+.admin-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+
+.admin-table tr:hover {
+    background: #f7f7f7;
+}
+
+
+.admin-status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+
+.admin-status.active {
+    background: #e6f7e9;
+}
+
+
+.admin-status.inactive {
+    background: #fdeaea;
+}
+
+
+.admin-role {
+    font-weight: 600;
+}
