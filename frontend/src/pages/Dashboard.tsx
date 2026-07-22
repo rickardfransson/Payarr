@@ -11,9 +11,12 @@ interface Overview {
         end_date: string;
     };
 
-    payments?: {
-        total: number;
-    };
+last_payment?: {
+    amount: number;
+    status: string;
+    provider: string;
+    paid_at?: string;
+};
 
     emby?: {
         connected: boolean;
@@ -118,13 +121,19 @@ function Dashboard() {
 
 
 
-                <StatCard
-                    title="Payments"
-                    value={
-                        `${overview?.payments?.total ?? 0}`
-                    }
-                    description="Totalt antal betalningar"
-                />
+<StatCard
+    title="Payments"
+    value={
+        overview?.last_payment
+            ? `${overview.last_payment.amount} SEK`
+            : "Ingen"
+    }
+    description={
+        overview?.last_payment
+            ? overview.last_payment.status
+            : "Ingen betalning"
+    }
+/>
 
 
 
