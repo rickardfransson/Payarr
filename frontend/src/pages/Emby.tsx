@@ -1,66 +1,10 @@
-import { useEffect, useState } from "react";
-
-import { useAuth } from "../context/AuthContext";
-import api from "../api/client";
 import StatCard from "../components/StatCard";
-
-
-interface EmbyData {
-    username: string;
-    active: boolean;
-}
+import { useOverview } from "../hooks/useOverview";
 
 
 function Emby() {
 
-    const { user } = useAuth();
-
-    const [emby, setEmby] = useState<EmbyData | null>(null);
-    const [loading, setLoading] = useState(true);
-
-
-
-    useEffect(() => {
-
-        async function loadEmby() {
-
-            if (!user) {
-                return;
-            }
-
-
-            try {
-
-                const response = await api.get(
-                    `/users/${user.id}/overview`
-                );
-
-
-                setEmby(
-                    response.data.emby ?? null
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    "Kunde inte hämta Emby-data",
-                    error
-                );
-
-            } finally {
-
-                setLoading(false);
-
-            }
-
-        }
-
-
-        loadEmby();
-
-    }, [user]);
-
+    const { overview, loading } = useOverview();
 
 
     if (loading) {
@@ -72,6 +16,10 @@ function Emby() {
         );
 
     }
+
+
+
+    const emby = overview?.emby;
 
 
 

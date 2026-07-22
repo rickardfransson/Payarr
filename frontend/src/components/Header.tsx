@@ -1,44 +1,57 @@
+import { useNavigate } from "react-router-dom";
+
 import { useAuth } from "../context/AuthContext";
+
+import "../styles/header.css";
 
 
 function Header() {
 
     const { user, logout } = useAuth();
 
+    const navigate = useNavigate();
+
+
+
+    function handleLogout() {
+
+        logout();
+
+        navigate("/login");
+
+    }
+
+
 
     return (
-        <header
-            style={{
-                padding: "20px",
-                borderBottom: "1px solid #ddd",
-                display: "flex",
-                justifyContent: "space-between"
-            }}
-        >
-
-            <div>
-                Payarr Dashboard
-            </div>
+        <header className="header">
 
 
-            <div>
+            <h2>
+                Payarr
+            </h2>
 
-                {user && (
-                    <>
-                        {user.username}
 
-                        <button
-                            onClick={logout}
-                            style={{
-                                marginLeft: "15px"
-                            }}
-                        >
-                            Logout
-                        </button>
-                    </>
-                )}
+
+            <div className="header-user">
+
+
+                <span>
+                    {user?.username}
+                </span>
+
+
+
+                <button
+                    className="header-button"
+                    onClick={handleLogout}
+                >
+                    Logga ut
+                </button>
+
 
             </div>
+
 
         </header>
     );

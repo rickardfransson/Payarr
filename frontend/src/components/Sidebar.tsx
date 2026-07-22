@@ -1,49 +1,50 @@
 import { Link } from "react-router-dom";
 
+import "../styles/sidebar.css";
+
 
 function Sidebar() {
-    return (
-        <aside
-            style={{
-                width: "220px",
-                padding: "20px",
-                borderRight: "1px solid #ddd"
-            }}
-        >
 
-            <h2>
+    return (
+        <aside className="sidebar">
+
+            <h2 className="sidebar-title">
                 Payarr
             </h2>
 
 
-            <nav>
+            <nav className="sidebar-menu">
 
-                <p>
-                    <Link to="/">
-                        Dashboard
-                    </Link>
-                </p>
-
-
-                <p>
-                    <Link to="/subscription">
-                        Subscription
-                    </Link>
-                </p>
+                <Link
+                    className="sidebar-link"
+                    to="/"
+                >
+                    Dashboard
+                </Link>
 
 
-                <p>
-                    <Link to="/payments">
-                        Payments
-                    </Link>
-                </p>
+                <Link
+                    className="sidebar-link"
+                    to="/subscription"
+                >
+                    Subscription
+                </Link>
 
 
-                <p>
-                    <Link to="/emby">
-                        Emby
-                    </Link>
-                </p>
+                <Link
+                    className="sidebar-link"
+                    to="/payments"
+                >
+                    Payments
+                </Link>
+
+
+                <Link
+                    className="sidebar-link"
+                    to="/emby"
+                >
+                    Emby
+                </Link>
 
             </nav>
 

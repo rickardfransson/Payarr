@@ -1,68 +1,10 @@
-import { useEffect, useState } from "react";
-
-import { useAuth } from "../context/AuthContext";
-import api from "../api/client";
 import StatCard from "../components/StatCard";
-
-
-interface PaymentData {
-    amount: number;
-    status: string;
-    provider: string;
-    paid_at?: string;
-}
+import { useOverview } from "../hooks/useOverview";
 
 
 function Payments() {
 
-    const { user } = useAuth();
-
-    const [payment, setPayment] = useState<PaymentData | null>(null);
-    const [loading, setLoading] = useState(true);
-
-
-
-    useEffect(() => {
-
-        async function loadPayment() {
-
-            if (!user) {
-                return;
-            }
-
-
-            try {
-
-                const response = await api.get(
-                    `/users/${user.id}/overview`
-                );
-
-
-                setPayment(
-                    response.data.last_payment ?? null
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    "Kunde inte hämta betalning",
-                    error
-                );
-
-            } finally {
-
-                setLoading(false);
-
-            }
-
-        }
-
-
-        loadPayment();
-
-    }, [user]);
-
+    const { overview, loading } = useOverview();
 
 
     if (loading) {
@@ -77,6 +19,10 @@ function Payments() {
 
 
 
+    const payment = overview?.last_payment;
+
+
+
     if (!payment) {
 
         return (
@@ -85,6 +31,7 @@ function Payments() {
                 <h1>
                     Payments
                 </h1>
+
 
                 <p>
                     Ingen betalning hittades.
@@ -134,21 +81,19 @@ function Payments() {
             </div>
 
 
-            {
-                payment.paid_at && (
+            {payment.paid_at && (
 
-                    <p
-                        style={{
-                            marginTop: "20px"
-                        }}
-                    >
-                        Betald:
-                        {" "}
-                        {payment.paid_at}
-                    </p>
+                <p
+                    style={{
+                        marginTop: "20px"
+                    }}
+                >
+                    Betald:
+                    {" "}
+                    {payment.paid_at}
+                </p>
 
-                )
-            }
+            )}
 
 
         </div>

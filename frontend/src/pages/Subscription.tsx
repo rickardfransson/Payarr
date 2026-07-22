@@ -1,74 +1,25 @@
-import { useEffect, useState } from "react";
-
-import { useAuth } from "../context/AuthContext";
-import api from "../api/client";
 import StatCard from "../components/StatCard";
-
-
-interface SubscriptionData {
-    active: boolean;
-    end_date: string;
-}
+import { useOverview } from "../hooks/useOverview";
 
 
 function Subscription() {
 
-    const { user } = useAuth();
-
-    const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
-    const [loading, setLoading] = useState(true);
-
-
-    useEffect(() => {
-
-        async function loadSubscription() {
-
-            if (!user) {
-                return;
-            }
-
-
-            try {
-
-                const response = await api.get(
-                    `/users/${user.id}/overview`
-                );
-
-
-                setSubscription(
-                    response.data.subscription ?? null
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    "Kunde inte hämta subscription",
-                    error
-                );
-
-            } finally {
-
-                setLoading(false);
-
-            }
-
-        }
-
-
-        loadSubscription();
-
-    }, [user]);
-
+    const { overview, loading } = useOverview();
 
 
     if (loading) {
+
         return (
             <p>
                 Laddar subscription...
             </p>
         );
+
     }
+
+
+
+    const subscription = overview?.subscription;
 
 
 
@@ -80,6 +31,7 @@ function Subscription() {
                 <h1>
                     Subscription
                 </h1>
+
 
                 <p>
                     Ingen aktiv prenumeration hittades.
@@ -128,7 +80,6 @@ function Subscription() {
                 />
 
             </div>
-
 
         </div>
     );

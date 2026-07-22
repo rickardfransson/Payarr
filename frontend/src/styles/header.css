@@ -1,0 +1,30 @@
+.header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 1px solid #ddd;
+    background: white;
+}
+
+
+.header-user {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+
+.header-button {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+}
+
+
+.header-button:hover {
+    background: #f2f2f2;
+}

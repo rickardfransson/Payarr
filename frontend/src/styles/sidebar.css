@@ -1,0 +1,32 @@
+.sidebar {
+    width: 220px;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    background: #fafafa;
+}
+
+
+.sidebar-title {
+    margin-top: 0;
+    margin-bottom: 30px;
+}
+
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+.sidebar-link {
+    text-decoration: none;
+    color: inherit;
+    padding: 8px 10px;
+    border-radius: 6px;
+}
+
+
+.sidebar-link:hover {
+    background: #eee;
+}

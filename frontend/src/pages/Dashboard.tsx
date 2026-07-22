@@ -1,85 +1,26 @@
-import { useEffect, useState } from "react";
-
-import { useAuth } from "../context/AuthContext";
-import api from "../api/client";
 import StatCard from "../components/StatCard";
-
-
-interface Overview {
-    subscription?: {
-        active: boolean;
-        end_date: string;
-    };
-
-last_payment?: {
-    amount: number;
-    status: string;
-    provider: string;
-    paid_at?: string;
-};
-
-    emby?: {
-        connected: boolean;
-        username?: string;
-    };
-}
+import { useAuth } from "../context/AuthContext";
+import { useOverview } from "../hooks/useOverview";
 
 
 function Dashboard() {
 
     const { user } = useAuth();
 
-    const [overview, setOverview] = useState<Overview | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { overview, loading } = useOverview();
 
-
-    useEffect(() => {
-
-        async function loadOverview() {
-
-            if (!user) {
-                return;
-            }
-
-
-            try {
-
-                const response = await api.get(
-                    `/users/${user.id}/overview`
-                );
-
-
-                setOverview(response.data);
-
-
-            } catch (error) {
-
-                console.error(
-                    "Kunde inte hämta dashboard data",
-                    error
-                );
-
-            } finally {
-
-                setLoading(false);
-
-            }
-
-        }
-
-
-        loadOverview();
-
-    }, [user]);
 
 
     if (loading) {
+
         return (
             <p>
                 Laddar dashboard...
             </p>
         );
+
     }
+
 
 
     return (
@@ -121,37 +62,38 @@ function Dashboard() {
 
 
 
-<StatCard
-    title="Payments"
-    value={
-        overview?.last_payment
-            ? `${overview.last_payment.amount} SEK`
-            : "Ingen"
-    }
-    description={
-        overview?.last_payment
-            ? overview.last_payment.status
-            : "Ingen betalning"
-    }
-/>
+                <StatCard
+                    title="Payments"
+                    value={
+                        overview?.last_payment
+                            ? `${overview.last_payment.amount} SEK`
+                            : "Ingen"
+                    }
+                    description={
+                        overview?.last_payment
+                            ? overview.last_payment.status
+                            : "Ingen betalning"
+                    }
+                />
 
 
 
                 <StatCard
                     title="Emby"
                     value={
-                        overview?.emby?.connected
+                        overview?.emby
                             ? "Ansluten"
                             : "Ej ansluten"
                     }
                     description={
-                        overview?.emby?.username
+                        overview?.emby
                             ? overview.emby.username
-                            : "Ingen Emby-koppling"
+                            : "Ingen koppling"
                     }
                 />
 
             </div>
+
 
         </div>
     );

@@ -1,3 +1,6 @@
+import "../styles/cards.css";
+
+
 interface StatCardProps {
     title: string;
     value: string;
@@ -12,14 +15,7 @@ function StatCard({
 }: StatCardProps) {
 
     return (
-        <div
-            style={{
-                padding: "20px",
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                background: "#fff"
-            }}
-        >
+        <div className="stat-card">
 
             <h3>
                 {title}

@@ -3,19 +3,26 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 
+import "../styles/layout.css";
+
 
 function DashboardLayout() {
+
     return (
-        <div style={{ display: "flex", minHeight: "100vh" }}>
+        <div className="dashboard-layout">
 
             <Sidebar />
 
-            <div style={{ flex: 1 }}>
+
+            <div className="dashboard-content">
 
                 <Header />
 
-                <main style={{ padding: "20px" }}>
+
+                <main className="dashboard-main">
+
                     <Outlet />
+
                 </main>
 
             </div>
