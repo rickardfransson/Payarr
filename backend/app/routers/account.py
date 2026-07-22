@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.database.session import get_db
+from app.database.session import get_database
 from app.models.user import User
 from app.models.payment import Payment
+from app.core.dependencies import get_current_user
 
 
 router = APIRouter(
@@ -12,26 +13,11 @@ router = APIRouter(
 )
 
 
-@router.get("/{user_id}")
+@router.get("/me")
 def get_account(
-    user_id: int,
-    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_database),
 ):
-
-    user = (
-        db.query(User)
-        .filter(
-            User.id == user_id
-        )
-        .first()
-    )
-
-
-    if not user:
-        return {
-            "error": "User not found"
-        }
-
 
     payments = (
         db.query(Payment)
@@ -58,7 +44,6 @@ def get_account(
             else None
         ),
 
-
         "payments": [
             {
                 "id": payment.id,
@@ -71,7 +56,6 @@ def get_account(
             }
             for payment in payments
         ],
-
 
         "emby": (
             {
