@@ -10,7 +10,6 @@ class SyncWorker:
     def __init__(self):
         self.sync_service = EmbySyncService()
 
-
     async def run(self, db: Session):
 
         users = (
@@ -33,26 +32,23 @@ class SyncWorker:
             if not result.get("success"):
                 continue
 
-
             action = result.get("action")
-
 
             if action == "none":
                 continue
-
 
             existing = (
                 db.query(EmbySyncLog)
                 .filter(
                     EmbySyncLog.user_id == user.id,
-                    EmbySyncLog.status == "pending"
+                    EmbySyncLog.action == action,
+                    EmbySyncLog.status == "pending",
                 )
                 .first()
             )
 
             if existing:
                 continue
-
 
             log = EmbySyncLog(
                 user_id=user.id,
@@ -66,9 +62,7 @@ class SyncWorker:
 
             created_logs.append(log)
 
-
         db.commit()
-
 
         return {
             "created": len(created_logs)
