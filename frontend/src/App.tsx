@@ -8,6 +8,7 @@ import Emby from "./pages/Emby";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardLayout from "./layout/DashboardLayout";
+import Account from "./pages/Account";
 
 
 function App() {
@@ -53,6 +54,11 @@ function App() {
                         path="emby"
                         element={<Emby />}
                     />
+
+                    <Route
+    path="account"
+    element={<Account />}
+/>
 
                 </Route>
 

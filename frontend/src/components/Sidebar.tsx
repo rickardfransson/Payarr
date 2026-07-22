@@ -46,6 +46,13 @@ function Sidebar() {
                     Emby
                 </Link>
 
+                <Link
+    className="sidebar-link"
+    to="/account"
+>
+    Account
+</Link>
+
             </nav>
 
         </aside>
