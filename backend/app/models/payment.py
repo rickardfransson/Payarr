@@ -41,6 +41,11 @@ class Payment(Base):
         nullable=True,
     )
 
+    checkout_url: Mapped[str | None] = mapped_column(
+    String(500),
+    nullable=True,
+)
+
 
     amount: Mapped[float] = mapped_column(
         Numeric(10, 2),

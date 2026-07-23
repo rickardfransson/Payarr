@@ -27,19 +27,23 @@ class PaymentService:
             },
         )
 
+
         payment = Payment(
             user_id=user_id,
             amount=amount,
             provider=provider,
             invoice_id=invoice.get("id"),
+            checkout_url=invoice.get("checkoutLink"),
             status="pending",
         )
+
 
         db.add(payment)
         db.commit()
         db.refresh(payment)
 
         return payment
+
 
 
     @staticmethod

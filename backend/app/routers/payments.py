@@ -35,11 +35,13 @@ async def create_payment(
     return {
         "id": payment.id,
         "invoice_id": payment.invoice_id,
+        "checkout_url": payment.checkout_url,
         "status": payment.status,
         "amount": float(payment.amount),
         "currency": payment.currency,
         "provider": payment.provider,
     }
+
 
 
 @router.get("/me")
@@ -50,8 +52,12 @@ def get_my_payments(
 
     payments = (
         db.query(Payment)
-        .filter(Payment.user_id == current_user.id)
-        .order_by(Payment.created_at.desc())
+        .filter(
+            Payment.user_id == current_user.id
+        )
+        .order_by(
+            Payment.created_at.desc()
+        )
         .all()
     )
 
@@ -59,6 +65,7 @@ def get_my_payments(
         {
             "id": payment.id,
             "invoice_id": payment.invoice_id,
+            "checkout_url": payment.checkout_url,
             "amount": float(payment.amount),
             "currency": payment.currency,
             "status": payment.status,
@@ -68,6 +75,7 @@ def get_my_payments(
         }
         for payment in payments
     ]
+
 
 
 @router.get("/{payment_id}")
@@ -86,18 +94,21 @@ def get_payment(
         .first()
     )
 
+
     if not payment:
         raise HTTPException(
             status_code=404,
             detail="Payment not found",
         )
 
+
     return {
         "id": payment.id,
         "invoice_id": payment.invoice_id,
+        "checkout_url": payment.checkout_url,
+        "status": payment.status,
         "amount": float(payment.amount),
         "currency": payment.currency,
-        "status": payment.status,
         "provider": payment.provider,
         "paid_at": payment.paid_at,
         "created_at": payment.created_at,

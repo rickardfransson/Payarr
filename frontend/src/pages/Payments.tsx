@@ -33,11 +33,13 @@ function Payments() {
 
         try {
 
-            const payment = await createPayment();
+const payment = await createPayment();
 
-            console.log(payment);
+console.log(payment);
 
-            setPaymentCreated(true);
+if (payment.checkout_url) {
+    window.location.href = payment.checkout_url;
+}
 
         } catch (error) {
 
