@@ -1,10 +1,13 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database.session import get_database
 from app.models.user import User
 from app.models.payment import Payment
 from app.core.dependencies import get_current_admin
+from app.schemas.admin_subscription import SubscriptionActivateRequest
+
+from app.services.admin_subscription_service import AdminSubscriptionService
 
 
 router = APIRouter(
@@ -93,3 +96,32 @@ def get_users(
 
 
     return result
+
+@router.post("/users/{user_id}/activate-subscription")
+def activate_subscription(
+    user_id: int,
+    request: SubscriptionActivateRequest,
+    db: Session = Depends(get_database),
+    current_user: User = Depends(get_current_admin)
+):
+
+    user = (
+        db.query(User)
+        .filter(User.id == user_id)
+        .first()
+    )
+
+
+    if not user:
+
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+
+    return AdminSubscriptionService.activate(
+        db=db,
+        user=user,
+        end_date=request.end_date
+    )

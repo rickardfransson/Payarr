@@ -13,6 +13,9 @@ function AdminUserDetails() {
     const [user, setUser] = useState<any>(null);
     const [embyStatus, setEmbyStatus] = useState<any>(null);
 
+    const [subscriptionDate, setSubscriptionDate] =
+        useState("");
+
 
 
     async function loadUser() {
@@ -24,6 +27,16 @@ function AdminUserDetails() {
             );
 
             setUser(response.data);
+
+
+            if (response.data.subscription?.end_date) {
+
+                setSubscriptionDate(
+                    response.data.subscription.end_date.substring(0, 10)
+                );
+
+            }
+
 
         } catch (error) {
 
@@ -95,12 +108,42 @@ function AdminUserDetails() {
 
 
 
+    async function saveSubscription() {
+
+        try {
+
+            await api.post(
+                `/admin/users/${id}/activate-subscription`,
+                {
+                    end_date: subscriptionDate
+                }
+            );
+
+
+            await loadUser();
+
+
+        } catch(error) {
+
+            console.error(
+                "Kunde inte uppdatera subscription",
+                error
+            );
+
+        }
+
+    }
+
+
+
+
     useEffect(() => {
 
         loadUser();
         loadEmbyStatus();
 
     }, [id]);
+
 
 
 
@@ -114,6 +157,8 @@ function AdminUserDetails() {
         );
 
     }
+
+
 
 
 
@@ -185,51 +230,56 @@ function AdminUserDetails() {
                     </h2>
 
 
-                    {
-                        user.subscription ? (
+                    <div className="admin-row">
 
-                            <>
+                        <span className="admin-label">
+                            Status
+                        </span>
 
-                                <div className="admin-row">
+                        <span>
+                            {
+                                user.subscription?.active
+                                    ? "Aktiv"
+                                    : "Inaktiv"
+                            }
+                        </span>
 
-                                    <span className="admin-label">
-                                        Status
-                                    </span>
-
-                                    <span>
-                                        {
-                                            user.subscription.active
-                                                ? "Aktiv"
-                                                : "Inaktiv"
-                                        }
-                                    </span>
-
-                                </div>
+                    </div>
 
 
-                                <div className="admin-row">
 
-                                    <span className="admin-label">
-                                        Slutar
-                                    </span>
+                    <div className="admin-row">
 
-                                    <span>
-                                        {user.subscription.end_date}
-                                    </span>
+                        <span className="admin-label">
+                            Utgångsdatum
+                        </span>
 
-                                </div>
 
-                            </>
+                        <input
+                            type="date"
+                            value={subscriptionDate}
+                            onChange={(e) =>
+                                setSubscriptionDate(
+                                    e.target.value
+                                )
+                            }
+                        />
 
-                        ) : (
+                    </div>
 
-                            <p>
-                                Ingen subscription
-                            </p>
 
-                        )
 
-                    }
+                    <div className="admin-actions">
+
+                        <button
+                            className="admin-button"
+                            onClick={saveSubscription}
+                            disabled={!subscriptionDate}
+                        >
+                            Spara abonnemang
+                        </button>
+
+                    </div>
 
 
                 </section>

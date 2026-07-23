@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import api from "../../api/client";
+import "../../styles/admin.css";
 
 
 interface SyncStatus {
@@ -48,6 +49,36 @@ interface EmbyUser {
 
 
 
+interface EmbyImportUser {
+
+    emby_user_id: string;
+
+    username: string;
+
+    enabled: boolean;
+
+    imported: boolean;
+
+}
+
+
+
+interface WaitingSubscription {
+
+    user_id: number;
+
+    username: string;
+
+    emby_username: string;
+
+    status: string;
+
+}
+
+
+
+
+
 function AdminEmby() {
 
 
@@ -63,159 +94,564 @@ function AdminEmby() {
         useState<EmbyUser[]>([]);
 
 
-
-    useEffect(() => {
-
-        async function loadData() {
-
-            try {
-
-                const statusResponse =
-                    await api.get(
-                        "/admin/emby/status"
-                    );
+    const [importUsers, setImportUsers] =
+        useState<EmbyImportUser[]>([]);
 
 
-                const logsResponse =
-                    await api.get(
-                        "/admin/emby/logs"
-                    );
+    const [waitingSubscriptions, setWaitingSubscriptions] =
+        useState<WaitingSubscription[]>([]);
 
 
-                const usersResponse =
-                    await api.get(
-                        "/admin/emby/users"
-                    );
+    const [selectedUsers, setSelectedUsers] =
+        useState<string[]>([]);
 
 
 
-                setStatus(
-                    statusResponse.data
-                );
+
+    async function loadData() {
+
+        try {
+
+            const [
+                statusResponse,
+                logsResponse,
+                usersResponse,
+                importResponse,
+                waitingResponse
+
+            ] = await Promise.all([
+
+                api.get("/admin/emby/status"),
+
+                api.get("/admin/emby/logs"),
+
+                api.get("/admin/emby/users"),
+
+                api.get("/admin/emby/import-preview"),
+
+                api.get("/admin/emby/waiting-subscriptions")
+
+            ]);
 
 
-                setLogs(
-                    logsResponse.data
-                );
+            setStatus(statusResponse.data);
+
+            setLogs(logsResponse.data);
+
+            setUsers(usersResponse.data);
+
+            setImportUsers(importResponse.data);
+
+            setWaitingSubscriptions(
+                waitingResponse.data
+            );
 
 
-                setUsers(
-                    usersResponse.data
-                );
+        } catch(error) {
 
-
-            } catch (error) {
-
-                console.error(
-                    "Kunde inte hämta Emby-data",
-                    error
-                );
-
-            }
+            console.error(
+                "Kunde inte hämta Emby-data",
+                error
+            );
 
         }
 
+    }
+
+
+
+
+
+    useEffect(() => {
 
         loadData();
-
 
     }, []);
 
 
 
 
+
+
+    function toggleUser(id: string) {
+
+        setSelectedUsers(current =>
+
+            current.includes(id)
+
+                ? current.filter(
+                    item => item !== id
+                )
+
+                :
+
+                [
+                    ...current,
+                    id
+                ]
+
+        );
+
+    }
+
+
+
+
+
+    async function importSelected() {
+
+
+        for(const id of selectedUsers) {
+
+
+            await api.post(
+                "/admin/emby/import",
+                {
+                    emby_user_id: id
+                }
+            );
+
+
+        }
+
+
+        setSelectedUsers([]);
+
+        await loadData();
+
+    }
+
+
+
+
+
+
+    async function activateSubscription(
+        userId:number
+    ) {
+
+
+        try {
+
+            await api.post(
+                `/admin/emby/activate/${userId}`
+            );
+
+
+            await loadData();
+
+
+        } catch(error) {
+
+            console.error(
+                "Kunde inte aktivera subscription",
+                error
+            );
+
+        }
+
+    }
+
+
+
+
+
+
+
     return (
 
-        <div>
+        <div className="admin-page">
 
 
-            <h1>
+            <h1 className="admin-title">
                 Admin - Emby
             </h1>
 
 
 
-            <section>
+
+
+            <div className="admin-grid">
+
+
+                <div className="admin-card">
+
+                    <h2>
+                        Scheduler
+                    </h2>
+
+
+                    <div className="admin-row">
+
+                        <span className="admin-label">
+                            Status
+                        </span>
+
+
+                        <span
+                            className={
+                                status?.scheduler_running
+                                    ? "admin-badge green"
+                                    : "admin-badge red"
+                            }
+                        >
+                            {
+                                status?.scheduler_running
+                                    ? "Running"
+                                    : "Stopped"
+                            }
+                        </span>
+
+
+                    </div>
+
+
+                    <div className="admin-row">
+
+                        <span className="admin-label">
+                            Senaste sync
+                        </span>
+
+
+                        <span>
+                            {
+                                status?.last_sync ?? "-"
+                            }
+                        </span>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+                <div className="admin-card">
+
+                    <h2>
+                        Väntar abonnemang
+                    </h2>
+
+
+                    <div className="admin-stat-value">
+                        {
+                            waitingSubscriptions.length
+                        }
+                    </div>
+
+
+                </div>
+
+
+
+
+
+                <div className="admin-card">
+
+                    <h2>
+                        Aktiva Emby
+                    </h2>
+
+
+                    <div className="admin-stat-value">
+
+                        {
+                            users.filter(
+                                u => u.emby_active
+                            ).length
+                        }
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+                <div className="admin-card">
+
+                    <h2>
+                        Import
+                    </h2>
+
+
+                    <div className="admin-stat-value">
+
+                        {
+                            importUsers.filter(
+                                u => !u.imported
+                            ).length
+                        }
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+
+
+            <div className="admin-table-card">
 
                 <h2>
-                    Sync Status
+                    Emby Import
                 </h2>
 
 
-                {
-                    status && (
+                <table className="admin-table">
 
-                        <>
+                    <thead>
 
-                            <p>
-                                Scheduler:
-                                {
-                                    status.scheduler_running
-                                        ? " Aktiv"
-                                        : " Stoppad"
-                                }
-                            </p>
+                        <tr>
 
+                            <th>
+                                Val
+                            </th>
 
-                            <p>
-                                Senaste sync:
-                                {
-                                    status.last_sync ?? "-"
-                                }
-                            </p>
+                            <th>
+                                Username
+                            </th>
 
+                            <th>
+                                Aktiv
+                            </th>
 
-                            <p>
-                                Status:
-                                {
-                                    status.last_status ?? "-"
-                                }
-                            </p>
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
 
 
-                            <p>
-                                Kontrollerade:
-                                {
-                                    status.users_checked
-                                }
-                            </p>
+                    <tbody>
 
 
-                            <p>
-                                Uppdaterade:
-                                {
-                                    status.users_updated
-                                }
-                            </p>
+                    {
+                        importUsers.map(user => (
+
+                            <tr key={user.emby_user_id}>
 
 
-                            <p>
-                                Avstängda:
-                                {
-                                    status.users_disabled
-                                }
-                            </p>
+                                <td>
 
-                        </>
+                                    {
+                                        !user.imported &&
+                                        <input
+                                            className="admin-checkbox"
+                                            type="checkbox"
+                                            checked={
+                                                selectedUsers.includes(
+                                                    user.emby_user_id
+                                                )
+                                            }
+                                            onChange={() =>
+                                                toggleUser(
+                                                    user.emby_user_id
+                                                )
+                                            }
+                                        />
+                                    }
 
-                    )
-                }
+                                </td>
 
 
-            </section>
+                                <td>
+                                    {user.username}
+                                </td>
+
+
+                                <td>
+                                    {
+                                        user.enabled
+                                            ? "Ja"
+                                            : "Nej"
+                                    }
+                                </td>
+
+
+                                <td>
+
+                                    <span
+                                        className={
+                                            user.imported
+                                                ? "admin-badge green"
+                                                : "admin-badge yellow"
+                                        }
+                                    >
+                                        {
+                                            user.imported
+                                                ? "Importerad"
+                                                : "Ej importerad"
+                                        }
+                                    </span>
+
+                                </td>
+
+
+                            </tr>
+
+                        ))
+                    }
+
+
+                    </tbody>
+
+                </table>
+
+
+                <div className="admin-table-actions">
+
+                    <button
+                        className="admin-button"
+                        disabled={
+                            selectedUsers.length === 0
+                        }
+                        onClick={importSelected}
+                    >
+
+                        Importera valda
+                        {
+                            selectedUsers.length > 0 &&
+                            ` (${selectedUsers.length})`
+                        }
+
+                    </button>
+
+                </div>
+
+
+            </div>
 
 
 
 
 
-            <section>
+
+
+            <div className="admin-table-card">
+
+
+                <h2>
+                    Väntar på abonnemang
+                </h2>
+
+
+                <table className="admin-table">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                User
+                            </th>
+
+                            <th>
+                                Emby
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Åtgärd
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                    {
+                        waitingSubscriptions.map(user => (
+
+                            <tr key={user.user_id}>
+
+
+                                <td>
+                                    {user.username}
+                                </td>
+
+
+                                <td>
+                                    {user.emby_username}
+                                </td>
+
+
+                                <td>
+
+                                    <span className="admin-badge yellow">
+                                        {user.status}
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <button
+                                        className="admin-button"
+                                        onClick={() =>
+                                            activateSubscription(
+                                                user.user_id
+                                            )
+                                        }
+                                    >
+                                        Aktivera 30 dagar
+                                    </button>
+
+                                </td>
+
+
+                            </tr>
+
+                        ))
+                    }
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+
+
+
+
+
+            <div className="admin-table-card">
+
 
                 <h2>
                     Sync Logs
                 </h2>
 
 
-                <table>
+                <table className="admin-table">
+
 
                     <thead>
 
@@ -239,54 +675,65 @@ function AdminEmby() {
 
                         </tr>
 
+
                     </thead>
+
 
 
                     <tbody>
 
-                        {
-                            logs.map(log => (
 
-                                <tr key={log.id}>
+                    {
+                        logs.map(log => (
 
-                                    <td>
-                                        {log.created_at}
-                                    </td>
+                            <tr key={log.id}>
 
 
-                                    <td>
-                                        {log.action}
-                                    </td>
+                                <td>
+                                    {log.created_at}
+                                </td>
 
 
-                                    <td>
+                                <td>
+                                    {log.action}
+                                </td>
+
+
+                                <td>
+
+                                    <span className="admin-badge blue">
                                         {log.status}
-                                    </td>
+                                    </span>
+
+                                </td>
 
 
-                                    <td>
-                                        {log.message ?? "-"}
-                                    </td>
+                                <td>
+                                    {log.message ?? "-"}
+                                </td>
 
 
-                                </tr>
+                            </tr>
 
-                            ))
-                        }
+                        ))
+                    }
+
 
                     </tbody>
+
 
                 </table>
 
 
-            </section>
+            </div>
 
 
 
 
 
 
-            <section>
+
+            <div className="admin-table-card">
 
 
                 <h2>
@@ -294,7 +741,8 @@ function AdminEmby() {
                 </h2>
 
 
-                <table>
+                <table className="admin-table">
+
 
                     <thead>
 
@@ -321,47 +769,72 @@ function AdminEmby() {
                     </thead>
 
 
+
                     <tbody>
 
 
-                        {
-                            users.map(user => (
+                    {
+                        users.map(user => (
 
-                                <tr key={user.user_id}>
-
-
-                                    <td>
-                                        {user.username}
-                                    </td>
+                            <tr key={user.user_id}>
 
 
-                                    <td>
-                                        {user.emby_username}
-                                    </td>
+                                <td>
+                                    {user.username}
+                                </td>
 
 
-                                    <td>
+                                <td>
+                                    {user.emby_username}
+                                </td>
+
+
+                                <td>
+
+                                    <span
+                                        className={
+                                            user.subscription_active
+                                                ? "admin-badge green"
+                                                : "admin-badge red"
+                                        }
+                                    >
+
                                         {
                                             user.subscription_active
                                                 ? "Aktiv"
                                                 : "Inaktiv"
                                         }
-                                    </td>
+
+                                    </span>
+
+                                </td>
 
 
-                                    <td>
+                                <td>
+
+                                    <span
+                                        className={
+                                            user.emby_active
+                                                ? "admin-badge green"
+                                                : "admin-badge red"
+                                        }
+                                    >
+
                                         {
                                             user.emby_active
                                                 ? "Aktiv"
                                                 : "Avstängd"
                                         }
-                                    </td>
+
+                                    </span>
+
+                                </td>
 
 
-                                </tr>
+                            </tr>
 
-                            ))
-                        }
+                        ))
+                    }
 
 
                     </tbody>
@@ -370,8 +843,7 @@ function AdminEmby() {
                 </table>
 
 
-            </section>
-
+            </div>
 
 
         </div>

@@ -12,7 +12,6 @@ class EmbySyncService:
     def __init__(self):
         self.emby = EmbyClient()
 
-
     @staticmethod
     def should_be_enabled(user: User) -> bool:
         """
@@ -29,7 +28,6 @@ class EmbySyncService:
             return False
 
         return True
-
 
     async def sync_user(
         self,
@@ -49,11 +47,17 @@ class EmbySyncService:
                 "reason": "User is not linked to an Emby account"
             }
 
+        # Ignorera importerade/manuella användare tills de aktiverats
+        if user.emby_account.status != "active":
+            return {
+                "success": True,
+                "action": "ignored",
+                "reason": f"Status is '{user.emby_account.status}'"
+            }
 
         emby_id = user.emby_account.emby_user_id
 
         desired_enabled = self.should_be_enabled(user)
-
 
         try:
             emby_user = await self.emby.get_user(
@@ -67,7 +71,6 @@ class EmbySyncService:
                 "reason": str(e)
             }
 
-
         if not emby_user:
             return {
                 "success": False,
@@ -75,12 +78,10 @@ class EmbySyncService:
                 "reason": "Emby user not found"
             }
 
-
         policy = emby_user.get(
             "Policy",
             {}
         )
-
 
         currently_disabled = policy.get(
             "IsDisabled",
@@ -89,22 +90,17 @@ class EmbySyncService:
 
         currently_enabled = not currently_disabled
 
-
         if desired_enabled and currently_disabled:
 
             action = "enable"
-
 
         elif not desired_enabled and currently_enabled:
 
             action = "disable"
 
-
         else:
 
             action = "none"
-
-
 
         if action != "none":
 
@@ -116,7 +112,6 @@ class EmbySyncService:
                 status="pending",
                 message=f"Sync decision: {action}"
             )
-
 
         return {
             "success": True,

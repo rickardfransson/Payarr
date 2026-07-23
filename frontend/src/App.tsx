@@ -18,6 +18,7 @@ import AdminUsers from "./admin/pages/AdminUsers";
 import AdminDashboard from "./admin/pages/AdminDashboard";
 import AdminUserDetails from "./admin/pages/AdminUserDetails";
 import AdminEmby from "./admin/pages/AdminEmby";
+import AdminEmbyImport from "./admin/pages/AdminEmbyImport";
 
 
 function App() {
@@ -79,6 +80,7 @@ function App() {
 
 
 
+
                 <Route
                     path="/admin"
                     element={
@@ -94,15 +96,26 @@ function App() {
                     }
                 >
 
+
                     <Route
                         index
                         element={<AdminDashboard />}
                     />
 
+
+
                     <Route
-    path="emby"
-    element={<AdminEmby />}
-/>
+                        path="emby"
+                        element={<AdminEmby />}
+                    />
+
+
+
+                    <Route
+                        path="emby/import"
+                        element={<AdminEmbyImport />}
+                    />
+
 
 
                     <Route
@@ -110,10 +123,13 @@ function App() {
                         element={<AdminUsers />}
                     />
 
+
+
                     <Route
-    path="users/:id"
-    element={<AdminUserDetails />}
-/>
+                        path="users/:id"
+                        element={<AdminUserDetails />}
+                    />
+
 
                 </Route>
 
