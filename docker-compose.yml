@@ -1,27 +1,57 @@
 services:
+
   backend:
     build:
       context: ./backend
     container_name: payarr-backend
-    env_file:
-      - ./backend/.env
+
+    environment:
+      APP_NAME: ${APP_NAME}
+      APP_VERSION: ${APP_VERSION}
+
+      SECRET_KEY: ${SECRET_KEY}
+
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_PORT: ${DATABASE_PORT}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+
+      EMBY_URL: ${EMBY_URL}
+      EMBY_API_KEY: ${EMBY_API_KEY}
+
+      BTCPAY_URL: ${BTCPAY_URL}
+      BTCPAY_API_KEY: ${BTCPAY_API_KEY}
+      BTCPAY_STORE_ID: ${BTCPAY_STORE_ID}
+
+      PAYMENT_PROVIDER: ${PAYMENT_PROVIDER}
+
     volumes:
       - ./backend:/app
+
     ports:
       - "8000:8000"
+
     depends_on:
       - database
+
     restart: unless-stopped
+
+
 
   database:
     image: postgres:16
     container_name: payarr-db
+
     restart: unless-stopped
+
     environment:
-      POSTGRES_DB: payarr
-      POSTGRES_USER: payarr
-      POSTGRES_PASSWORD: payarrpassword
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
     volumes:
       - ./database:/var/lib/postgresql/data
+
     ports:
       - "5432:5432"
