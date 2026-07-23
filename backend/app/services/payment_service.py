@@ -14,7 +14,7 @@ class PaymentService:
         db: Session,
         user_id: int,
         amount: float,
-        provider: str = "btcpay",
+        provider: str = "swish",
     ):
 
         provider_client = PaymentProviderFactory.get_provider()

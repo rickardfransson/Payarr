@@ -17,7 +17,10 @@ class Settings(BaseSettings):
     BTCPAY_URL: str = ""
     BTCPAY_API_KEY: str = ""
     BTCPAY_STORE_ID: str = ""
-    PAYMENT_PROVIDER: str = "mock"
+
+    SWISH_NUMBER: str = ""
+
+    PAYMENT_PROVIDER: str = "swish"
 
     model_config = SettingsConfigDict(
         env_file=".env",

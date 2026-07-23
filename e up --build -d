@@ -1,0 +1,50 @@
+[1mdiff --git a/backend/app/core/config.py b/backend/app/core/config.py[m
+[1mindex 764d5e4..1b0d7ec 100644[m
+[1m--- a/backend/app/core/config.py[m
+[1m+++ b/backend/app/core/config.py[m
+[36m@@ -17,7 +17,10 @@[m [mclass Settings(BaseSettings):[m
+     BTCPAY_URL: str = ""[m
+     BTCPAY_API_KEY: str = ""[m
+     BTCPAY_STORE_ID: str = ""[m
+[31m-    PAYMENT_PROVIDER: str = "mock"[m
+[32m+[m
+[32m+[m[32m    SWISH_NUMBER: str = ""[m
+[32m+[m
+[32m+[m[32m    PAYMENT_PROVIDER: str = "swish"[m
+ [m
+     model_config = SettingsConfigDict([m
+         env_file=".env",[m
+[1mdiff --git a/backend/app/services/payment/providers/factory.py b/backend/app/services/payment/providers/factory.py[m
+[1mindex e9d1386..9a16d9e 100644[m
+[1m--- a/backend/app/services/payment/providers/factory.py[m
+[1m+++ b/backend/app/services/payment/providers/factory.py[m
+[36m@@ -2,6 +2,7 @@[m [mfrom app.core.config import settings[m
+ [m
+ from app.services.payment.providers.mock import MockPaymentProvider[m
+ from app.services.payment.btcpay import BTCPayClient[m
+[32m+[m[32mfrom app.services.payment.swish import SwishProvider[m
+ [m
+ [m
+ class PaymentProviderFactory:[m
+[36m@@ -12,4 +13,7 @@[m [mclass PaymentProviderFactory:[m
+         if settings.PAYMENT_PROVIDER == "btcpay":[m
+             return BTCPayClient()[m
+ [m
+[32m+[m[32m        if settings.PAYMENT_PROVIDER == "swish":[m
+[32m+[m[32m            return SwishProvider()[m
+[32m+[m
+         return MockPaymentProvider()[m
+\ No newline at end of file[m
+[1mdiff --git a/backend/app/services/payment_service.py b/backend/app/services/payment_service.py[m
+[1mindex dad3e29..95c8a34 100644[m
+[1m--- a/backend/app/services/payment_service.py[m
+[1m+++ b/backend/app/services/payment_service.py[m
+[36m@@ -14,7 +14,7 @@[m [mclass PaymentService:[m
+         db: Session,[m
+         user_id: int,[m
+         amount: float,[m
+[31m-        provider: str = "btcpay",[m
+[32m+[m[32m        provider: str = "swish",[m
+     ):[m
+ [m
+         provider_client = PaymentProviderFactory.get_provider()[m
