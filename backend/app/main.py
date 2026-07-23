@@ -5,6 +5,7 @@ from sqlalchemy import text
 from app.core.config import settings
 from app.core.logging import setup_logging, get_logger
 from app.database.session import engine
+from app.routers import payments
 
 from app.routers import (
     users,
@@ -96,6 +97,8 @@ app.include_router(
 app.include_router(
     btcpay_webhook.router,
 )
+
+app.include_router(payments.router)
 
 
 @app.on_event("startup")
