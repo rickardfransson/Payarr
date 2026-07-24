@@ -44,9 +44,7 @@ function AdminPayments() {
                 `/admin/payments/complete/${id}`
             );
 
-
             await loadPayments();
-
 
         } catch (error) {
 
@@ -86,109 +84,182 @@ function AdminPayments() {
         <div>
 
             <h1>
-                Admin Payments
+                Betalningar
             </h1>
 
 
-            <table
+            <p>
+                Totalt antal betalningar: {payments.length}
+            </p>
+
+
+
+            <div
                 style={{
-                    width: "100%",
                     marginTop: "30px",
-                    borderCollapse: "collapse"
+                    overflowX: "auto"
                 }}
             >
 
-                <thead>
+                <table
+                    style={{
+                        width: "100%",
+                        borderCollapse: "collapse",
+                        background: "#fff"
+                    }}
+                >
 
-                    <tr>
+                    <thead>
 
-                        <th>
-                            User
-                        </th>
+                        <tr>
 
-                        <th>
-                            Belopp
-                        </th>
+                            <th style={cellHeader}>
+                                ID
+                            </th>
 
-                        <th>
-                            Status
-                        </th>
+                            <th style={cellHeader}>
+                                Användare
+                            </th>
 
-                        <th>
-                            Datum
-                        </th>
+                            <th style={cellHeader}>
+                                Belopp
+                            </th>
 
-                        <th>
-                            Åtgärd
-                        </th>
+                            <th style={cellHeader}>
+                                Leverantör
+                            </th>
 
-                    </tr>
+                            <th style={cellHeader}>
+                                Status
+                            </th>
 
-                </thead>
+                            <th style={cellHeader}>
+                                Skapad
+                            </th>
 
-
-                <tbody>
-
-                    {payments.map(
-                        (payment) => (
-
-                        <tr key={payment.id}>
-
-                            <td>
-                                {payment.username}
-                            </td>
-
-
-                            <td>
-                                {payment.amount} {payment.currency}
-                            </td>
-
-
-                            <td>
-                                {payment.status}
-                            </td>
-
-
-                            <td>
-                                {
-                                    new Date(
-                                        payment.created_at
-                                    ).toLocaleString()
-                                }
-                            </td>
-
-
-                            <td>
-
-                                {payment.status !== "paid" && (
-
-                                    <button
-                                        onClick={() =>
-                                            completePayment(
-                                                payment.id
-                                            )
-                                        }
-                                    >
-                                        Markera betald
-                                    </button>
-
-                                )}
-
-                            </td>
+                            <th style={cellHeader}>
+                                Åtgärd
+                            </th>
 
                         </tr>
 
-                    ))}
+                    </thead>
 
-                </tbody>
 
-            </table>
+
+                    <tbody>
+
+                        {payments.map(
+                            (payment) => (
+
+                            <tr key={payment.id}>
+
+                                <td style={cell}>
+                                    {payment.id}
+                                </td>
+
+
+                                <td style={cell}>
+                                    {payment.username}
+                                </td>
+
+
+                                <td style={cell}>
+                                    {payment.amount} {payment.currency}
+                                </td>
+
+
+                                <td style={cell}>
+                                    {payment.provider}
+                                </td>
+
+
+                                <td style={cell}>
+
+                                    <span
+                                        style={{
+                                            padding: "4px 10px",
+                                            borderRadius: "12px",
+                                            fontSize: "0.85rem",
+                                            background:
+                                                payment.status === "paid"
+                                                    ? "#d4edda"
+                                                    : "#fff3cd"
+                                        }}
+                                    >
+                                        {payment.status}
+                                    </span>
+
+                                </td>
+
+
+                                <td style={cell}>
+
+                                    {
+                                        new Date(
+                                            payment.created_at
+                                        ).toLocaleString(
+                                            "sv-SE"
+                                        )
+                                    }
+
+                                </td>
+
+
+                                <td style={cell}>
+
+                                    {payment.status !== "paid" && (
+
+                                        <button
+                                            onClick={() =>
+                                                completePayment(
+                                                    payment.id
+                                                )
+                                            }
+                                        >
+                                            Markera betald
+                                        </button>
+
+                                    )}
+
+                                </td>
+
+
+                            </tr>
+
+                        ))}
+
+                    </tbody>
+
+
+                </table>
+
+            </div>
+
 
         </div>
 
     );
 
 }
+
+
+
+const cellHeader = {
+
+    textAlign: "left" as const,
+    padding: "12px",
+    borderBottom: "2px solid #ddd"
+
+};
+
+
+const cell = {
+
+    padding: "12px",
+    borderBottom: "1px solid #eee"
+
+};
 
 
 export default AdminPayments;
