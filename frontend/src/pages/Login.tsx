@@ -33,10 +33,18 @@ function Login() {
                 }
             );
 
+login(response.data.access_token);
 
-            login(response.data.access_token);
 
-            navigate("/");
+if (response.data.must_change_password) {
+
+    navigate("/change-password");
+
+} else {
+
+    navigate("/");
+
+}
 
         } catch (err) {
             console.error(err);

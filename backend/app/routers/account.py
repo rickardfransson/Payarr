@@ -22,10 +22,8 @@ router = APIRouter(
 
 
 class ChangePasswordRequest(BaseModel):
-
     current_password: str
     new_password: str
-
 
 
 @router.get("/me")
@@ -45,10 +43,10 @@ def get_account(
         .all()
     )
 
-
     return {
         "user_id": user.id,
         "username": user.username,
+        "must_change_password": user.must_change_password,
 
         "subscription": (
             {
@@ -83,7 +81,6 @@ def get_account(
     }
 
 
-
 @router.post("/change-password")
 def change_password(
     data: ChangePasswordRequest,
@@ -98,19 +95,19 @@ def change_password(
 
         return {
             "success": False,
-            "message": "Felaktigt nuvarande lösenord"
+            "message": "Felaktigt nuvarande lösenord",
         }
-
 
     user.password_hash = hash_password(
         data.new_password
     )
 
+    user.must_change_password = False
 
     db.commit()
-
+    db.refresh(user)
 
     return {
         "success": True,
-        "message": "Lösenord uppdaterat"
+        "message": "Lösenord uppdaterat",
     }

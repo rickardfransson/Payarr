@@ -19,6 +19,7 @@ import AdminDashboard from "./admin/pages/AdminDashboard";
 import AdminUserDetails from "./admin/pages/AdminUserDetails";
 import AdminEmby from "./admin/pages/AdminEmby";
 import AdminEmbyImport from "./admin/pages/AdminEmbyImport";
+import ChangePassword from "./pages/ChangePassword";
 
 
 function App() {
@@ -35,7 +36,10 @@ function App() {
                     element={<Login />}
                 />
 
-
+                <Route
+    path="/change-password"
+    element={<ChangePassword />}
+/>
 
                 <Route
                     path="/"

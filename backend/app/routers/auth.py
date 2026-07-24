@@ -88,6 +88,8 @@ def login(
     )
 
     return {
-        "access_token": token,
-        "token_type": "bearer"
+    "access_token": token,
+    "token_type": "bearer",
+    "must_change_password": user.must_change_password,
+    "role": user.role,
     }
