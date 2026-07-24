@@ -32,17 +32,24 @@ function AdminSidebar() {
                     Users
                 </Link>
 
-                <Link
-    className="sidebar-link"
-    to="/admin/emby"
->
-    Emby
-</Link>
 
+                <Link
+                    className="sidebar-link"
+                    to="/admin/payments"
+                >
+                    Payments
+                </Link>
+
+
+                <Link
+                    className="sidebar-link"
+                    to="/admin/emby"
+                >
+                    Emby
+                </Link>
 
 
                 <hr />
-
 
 
                 <Link

@@ -77,7 +77,6 @@ app.include_router(
 
 app.include_router(
     admin_payments.router,
-    prefix="/api/v1",
 )
 
 app.include_router(
