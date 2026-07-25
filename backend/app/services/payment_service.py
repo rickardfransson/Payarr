@@ -4,10 +4,13 @@ from sqlalchemy.orm import Session
 
 from app.models.payment import Payment
 from app.models.subscription import Subscription
+from app.services.settings_service import SettingsService
+
 from app.services.payment.providers.factory import PaymentProviderFactory
 
 
 class PaymentService:
+
 
     @staticmethod
     async def create_payment(
@@ -16,8 +19,9 @@ class PaymentService:
         amount: float,
         provider: str = "swish",
     ):
-
+        amount = SettingsService.get_subscription_price(db)
         provider_client = PaymentProviderFactory.get_provider()
+
 
         invoice = await provider_client.create_invoice(
             amount=amount,
@@ -42,6 +46,7 @@ class PaymentService:
         db.commit()
         db.refresh(payment)
 
+
         return payment
 
 
@@ -52,15 +57,18 @@ class PaymentService:
         payment: Payment,
     ):
 
-        # Skydd mot dubbel webhook
+
+        # Skydd mot dubbel betalning
         if payment.status == "paid":
             return payment
 
 
         now = datetime.utcnow()
 
+
         payment.status = "paid"
         payment.paid_at = now
+
 
 
         subscription = (
@@ -72,22 +80,44 @@ class PaymentService:
         )
 
 
+
         if subscription:
 
+
             if subscription.end_date > now:
+
                 subscription.end_date += timedelta(days=30)
 
+
             else:
+
                 subscription.start_date = now
                 subscription.end_date = (
                     now + timedelta(days=30)
                 )
 
+
             subscription.active = True
+
+
+
+        else:
+
+            subscription = Subscription(
+                user_id=payment.user_id,
+                start_date=now,
+                end_date=now + timedelta(days=30),
+                active=True,
+                auto_renew=False,
+            )
+
+            db.add(subscription)
+
 
 
         db.commit()
 
         db.refresh(payment)
+
 
         return payment
