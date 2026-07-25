@@ -8,6 +8,7 @@ from app.core.dependencies import get_current_admin
 from app.schemas.admin_subscription import SubscriptionActivateRequest
 
 from app.services.admin_subscription_service import AdminSubscriptionService
+from app.core.security import hash_password
 
 
 router = APIRouter(
@@ -125,3 +126,39 @@ def activate_subscription(
         user=user,
         end_date=request.end_date
     )
+
+@router.post("/users/{user_id}/reset-password")
+def reset_password(
+    user_id: int,
+    db: Session = Depends(get_database),
+    current_user: User = Depends(get_current_admin)
+):
+
+    user = (
+        db.query(User)
+        .filter(User.id == user_id)
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    temporary_password = user.username
+
+    user.password_hash = hash_password(
+        temporary_password
+    )
+
+    user.must_change_password = True
+
+    db.commit()
+    db.refresh(user)
+
+    return {
+        "message": "Password reset",
+        "temporary_password": temporary_password,
+        "must_change_password": True
+    }
