@@ -1,4 +1,9 @@
+from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+ROOT_DIR = Path(__file__).resolve().parents[3]
 
 
 class Settings(BaseSettings):
@@ -12,8 +17,10 @@ class Settings(BaseSettings):
     DATABASE_NAME: str = "payarr"
     DATABASE_USER: str = "payarr"
     DATABASE_PASSWORD: str = "payarrpassword"
+
     EMBY_URL: str
     EMBY_API_KEY: str
+
     BTCPAY_URL: str = ""
     BTCPAY_API_KEY: str = ""
     BTCPAY_STORE_ID: str = ""
@@ -23,7 +30,7 @@ class Settings(BaseSettings):
     PAYMENT_PROVIDER: str = "swish"
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=ROOT_DIR / ".env",
         case_sensitive=True,
     )
 
