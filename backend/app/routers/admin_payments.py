@@ -1,29 +1,68 @@
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
+from app.core.dependencies import get_current_user
 from app.database.session import get_database
 from app.models.payment import Payment
 from app.models.user import User
-
-from app.core.dependencies import get_current_admin
-
 from app.services.payment_service import PaymentService
+from app.services.settings_service import SettingsService
 
 
 router = APIRouter(
-    prefix="/api/v1/admin/payments",
-    tags=["Admin - Payments"],
+    prefix="/api/v1/payments",
+    tags=["Payments"],
 )
 
 
-@router.get("/")
-def list_payments(
+class CreatePaymentRequest(BaseModel):
+    amount: float | None = None
+
+
+@router.post("/create")
+async def create_payment(
+    request: CreatePaymentRequest,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_database),
-    current_user: User = Depends(get_current_admin),
+):
+
+    amount = request.amount
+
+    if amount is None:
+        amount = SettingsService.get_subscription_price(db)
+
+
+    payment = await PaymentService.create_payment(
+        db=db,
+        user_id=current_user.id,
+        amount=amount,
+    )
+
+
+    return {
+        "id": payment.id,
+        "invoice_id": payment.invoice_id,
+        "checkout_url": payment.checkout_url,
+        "status": payment.status,
+        "amount": float(payment.amount),
+        "currency": payment.currency,
+        "provider": payment.provider,
+    }
+
+
+
+@router.get("/me")
+def get_my_payments(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_database),
 ):
 
     payments = (
         db.query(Payment)
+        .filter(
+            Payment.user_id == current_user.id
+        )
         .order_by(
             Payment.created_at.desc()
         )
@@ -34,17 +73,12 @@ def list_payments(
     return [
         {
             "id": payment.id,
-            "user_id": payment.user_id,
-            "username": payment.user.username,
-
+            "invoice_id": payment.invoice_id,
+            "checkout_url": payment.checkout_url,
             "amount": float(payment.amount),
             "currency": payment.currency,
-
-            "provider": payment.provider,
             "status": payment.status,
-
-            "checkout_url": payment.checkout_url,
-
+            "provider": payment.provider,
             "paid_at": payment.paid_at,
             "created_at": payment.created_at,
         }
@@ -53,61 +87,18 @@ def list_payments(
 
 
 
-@router.post("/create/{user_id}")
-async def create_payment(
-    user_id: int,
-    amount: float = 100,
-    db: Session = Depends(get_database),
-    current_user: User = Depends(get_current_admin),
-):
-
-    user = (
-        db.query(User)
-        .filter(
-            User.id == user_id
-        )
-        .first()
-    )
-
-
-    if not user:
-        raise HTTPException(
-            status_code=404,
-            detail="User not found"
-        )
-
-
-    payment = await PaymentService.create_payment(
-        db=db,
-        user_id=user_id,
-        amount=amount,
-        provider="swish",
-    )
-
-
-    return {
-        "id": payment.id,
-        "user_id": payment.user_id,
-        "amount": float(payment.amount),
-        "currency": payment.currency,
-        "provider": payment.provider,
-        "checkout_url": payment.checkout_url,
-        "status": payment.status,
-    }
-
-
-
-@router.post("/complete/{payment_id}")
-def complete_payment(
+@router.get("/{payment_id}")
+def get_payment(
     payment_id: int,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_database),
-    current_user: User = Depends(get_current_admin),
 ):
 
     payment = (
         db.query(Payment)
         .filter(
-            Payment.id == payment_id
+            Payment.id == payment_id,
+            Payment.user_id == current_user.id,
         )
         .first()
     )
@@ -116,18 +107,18 @@ def complete_payment(
     if not payment:
         raise HTTPException(
             status_code=404,
-            detail="Payment not found"
+            detail="Payment not found",
         )
 
 
-    payment = PaymentService.complete_payment(
-        db=db,
-        payment=payment,
-    )
-
-
     return {
-        "success": True,
-        "payment_id": payment.id,
+        "id": payment.id,
+        "invoice_id": payment.invoice_id,
+        "checkout_url": payment.checkout_url,
         "status": payment.status,
+        "amount": float(payment.amount),
+        "currency": payment.currency,
+        "provider": payment.provider,
+        "paid_at": payment.paid_at,
+        "created_at": payment.created_at,
     }

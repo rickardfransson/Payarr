@@ -7,6 +7,7 @@ from app.database.session import get_database
 from app.models.payment import Payment
 from app.models.user import User
 from app.services.payment_service import PaymentService
+from app.services.settings_service import SettingsService
 
 
 router = APIRouter(
@@ -16,7 +17,7 @@ router = APIRouter(
 
 
 class CreatePaymentRequest(BaseModel):
-    amount: float = 100
+    amount: float | None = None
 
 
 @router.post("/create")
@@ -26,11 +27,18 @@ async def create_payment(
     db: Session = Depends(get_database),
 ):
 
+    amount = request.amount
+
+    if amount is None:
+        amount = SettingsService.get_subscription_price(db)
+
+
     payment = await PaymentService.create_payment(
         db=db,
         user_id=current_user.id,
-        amount=request.amount,
+        amount=amount,
     )
+
 
     return {
         "id": payment.id,

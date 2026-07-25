@@ -22,6 +22,7 @@ from app.routers import (
     btcpay_webhook,
     account,
     admin_dashboard,
+    admin_settings,
 )
 
 from app.services.scheduler import (
@@ -98,6 +99,10 @@ app.include_router(
 )
 
 app.include_router(payments.router)
+
+app.include_router(
+    admin_settings.router,
+)
 
 
 @app.on_event("startup")

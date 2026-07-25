@@ -22,6 +22,7 @@ import AdminEmbyImport from "./admin/pages/AdminEmbyImport";
 import AdminPayments from "./admin/pages/AdminPayments";
 
 import ChangePassword from "./pages/ChangePassword";
+import AdminSettings from "./admin/pages/AdminSettings";
 
 
 function App() {
@@ -126,6 +127,11 @@ function App() {
                     <Route
                         path="users"
                         element={<AdminUsers />}
+                    />
+
+                    <Route
+                         path="settings"
+                         element={<AdminSettings />}
                     />
 
 

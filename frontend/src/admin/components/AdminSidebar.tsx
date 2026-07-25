@@ -32,6 +32,13 @@ function AdminSidebar() {
                     Users
                 </Link>
 
+                <Link
+    className="sidebar-link"
+    to="/admin/settings"
+>
+    Settings
+</Link>
+
 
                 <Link
                     className="sidebar-link"
