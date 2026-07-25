@@ -98,8 +98,6 @@ class EmbyImportService:
 
         username = emby_user["Name"]
 
-
-
         user = User(
 
             username=username,
@@ -109,11 +107,13 @@ class EmbyImportService:
                 "@import.payarr"
             ),
 
-            password_hash=hash_password(
-                emby_user_id
-            ),
+password_hash=hash_password(
+    username
+),
 
             active=True,
+
+            must_change_password=True,
         )
 
 
