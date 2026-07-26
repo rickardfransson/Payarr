@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/client";
 import { useAuth } from "../context/AuthContext";
+import "../styles/login.css";
 
 
 function Login() {
@@ -53,12 +54,15 @@ if (response.data.must_change_password) {
     };
 
 
-    return (
-        <div style={{ padding: "40px" }}>
+return (
+    <div className="login-container">
+
+        <div className="login-box">
+
             <h1>Payarr Login</h1>
 
-
             <input
+                className="login-input"
                 placeholder="Username"
                 value={username}
                 onChange={(e) =>
@@ -66,11 +70,8 @@ if (response.data.must_change_password) {
                 }
             />
 
-
-            <br /><br />
-
-
             <input
+                className="login-input"
                 type="password"
                 placeholder="Password"
                 value={password}
@@ -79,14 +80,12 @@ if (response.data.must_change_password) {
                 }
             />
 
-
-            <br /><br />
-
-
-            <button onClick={handleLogin}>
+            <button
+                className="login-button"
+                onClick={handleLogin}
+            >
                 Logga in
             </button>
-
 
             {error && (
                 <p style={{ color: "red" }}>
@@ -95,7 +94,9 @@ if (response.data.must_change_password) {
             )}
 
         </div>
-    );
+
+    </div>
+);
 }
 
 
