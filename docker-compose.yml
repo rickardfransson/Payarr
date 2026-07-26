@@ -5,28 +5,8 @@ services:
       context: ./backend
     container_name: payarr-backend
 
-    environment:
-      APP_NAME: ${APP_NAME}
-      APP_VERSION: ${APP_VERSION}
-
-      SECRET_KEY: ${SECRET_KEY}
-
-      DATABASE_HOST: ${DATABASE_HOST}
-      DATABASE_PORT: ${DATABASE_PORT}
-      DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_USER: ${DATABASE_USER}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-
-      EMBY_URL: ${EMBY_URL}
-      EMBY_API_KEY: ${EMBY_API_KEY}
-
-      BTCPAY_URL: ${BTCPAY_URL}
-      BTCPAY_API_KEY: ${BTCPAY_API_KEY}
-      BTCPAY_STORE_ID: ${BTCPAY_STORE_ID}
-
-      SWISH_NUMBER: ${SWISH_NUMBER}
-
-      PAYMENT_PROVIDER: ${PAYMENT_PROVIDER}
+    env_file:
+      - .env
 
     volumes:
       - ./backend:/app
@@ -40,12 +20,37 @@ services:
     restart: unless-stopped
 
 
+  frontend:
+    build:
+      context: ./frontend
+    container_name: payarr-frontend
+
+    env_file:
+      - .env
+
+    working_dir: /app
+
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+    ports:
+      - "5173:5173"
+
+    command: npm run dev -- --host 0.0.0.0
+
+    depends_on:
+      - backend
+
+    restart: unless-stopped
+
 
   database:
     image: postgres:16
     container_name: payarr-db
 
-    restart: unless-stopped
+    env_file:
+      - .env
 
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -57,3 +62,5 @@ services:
 
     ports:
       - "5432:5432"
+
+    restart: unless-stopped
