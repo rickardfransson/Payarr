@@ -6,9 +6,24 @@
 
 .dashboard-content {
     flex: 1;
+    min-width: 0;
 }
 
 
 .dashboard-main {
     padding: 20px;
+}
+
+
+@media (max-width: 768px) {
+
+    .dashboard-layout {
+        display: block;
+    }
+
+
+    .dashboard-main {
+        padding: 16px;
+    }
+
 }

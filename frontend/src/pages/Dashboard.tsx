@@ -1,6 +1,7 @@
 import StatCard from "../components/StatCard";
 import { useAuth } from "../context/AuthContext";
 import { useOverview } from "../hooks/useOverview";
+import "../styles/dashboard.css";
 
 
 function Dashboard() {
@@ -37,14 +38,7 @@ function Dashboard() {
 
 
 
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(3, 1fr)",
-                    gap: "20px",
-                    marginTop: "30px"
-                }}
-            >
+<div className="dashboard-cards">
 
                 <StatCard
                     title="Subscription"

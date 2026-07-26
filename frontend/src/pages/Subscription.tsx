@@ -4,6 +4,8 @@ import StatCard from "../components/StatCard";
 import { useOverview } from "../hooks/useOverview";
 import api from "../api/client";
 
+import "../styles/subscription.css";
+
 
 function Subscription() {
 
@@ -91,6 +93,7 @@ function Subscription() {
 
 
                 <button
+                    className="subscription-button"
                     onClick={handleSwishPayment}
                     disabled={paymentLoading}
                 >
@@ -116,14 +119,7 @@ function Subscription() {
             </h1>
 
 
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(2, 1fr)",
-                    gap: "20px",
-                    marginTop: "30px"
-                }}
-            >
+            <div className="subscription-cards">
 
                 <StatCard
                     title="Status"
@@ -146,13 +142,11 @@ function Subscription() {
             </div>
 
 
-            <div
-                style={{
-                    marginTop: "30px"
-                }}
-            >
+
+            <div className="subscription-payment">
 
                 <button
+                    className="subscription-button"
                     onClick={handleSwishPayment}
                     disabled={paymentLoading}
                 >

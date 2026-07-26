@@ -30,3 +30,33 @@
 .sidebar-link:hover {
     background: #eee;
 }
+
+.sidebar-toggle {
+    display: none;
+}
+
+
+@media (max-width: 768px) {
+
+    .sidebar-toggle {
+        display: block;
+        margin: 10px;
+        padding: 10px 14px;
+        font-size: 22px;
+        cursor: pointer;
+    }
+
+
+    .sidebar {
+        display: none;
+        width: auto;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+
+    .sidebar.sidebar-open {
+        display: block;
+    }
+
+}

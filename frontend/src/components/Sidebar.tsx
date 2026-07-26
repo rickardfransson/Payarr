@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
@@ -9,87 +10,99 @@ function Sidebar() {
 
     const { user } = useAuth();
 
+    const [open, setOpen] = useState(false);
+
 
     return (
-        <aside className="sidebar">
+        <>
 
-            <h2 className="sidebar-title">
-                Payarr
-            </h2>
-
-
-            <nav className="sidebar-menu">
-
-                <Link
-                    className="sidebar-link"
-                    to="/"
-                >
-                    Dashboard
-                </Link>
+            <button
+                className="sidebar-toggle"
+                onClick={() => setOpen(!open)}
+            >
+                ☰
+            </button>
 
 
-                <Link
-                    className="sidebar-link"
-                    to="/subscription"
-                >
-                    Subscription
-                </Link>
+            <aside className={`sidebar ${open ? "sidebar-open" : ""}`}>
+
+                <h2 className="sidebar-title">
+                    Payarr
+                </h2>
 
 
-                <Link
-                    className="sidebar-link"
-                    to="/payments"
-                >
-                    Payments
-                </Link>
+                <nav className="sidebar-menu">
+
+                    <Link
+                        className="sidebar-link"
+                        to="/"
+                    >
+                        Dashboard
+                    </Link>
 
 
-                <Link
-                    className="sidebar-link"
-                    to="/emby"
-                >
-                    Emby
-                </Link>
+                    <Link
+                        className="sidebar-link"
+                        to="/subscription"
+                    >
+                        Subscription
+                    </Link>
 
 
-                <Link
-                    className="sidebar-link"
-                    to="/account"
-                >
-                    Account
-                </Link>
+                    <Link
+                        className="sidebar-link"
+                        to="/payments"
+                    >
+                        Payments
+                    </Link>
 
 
-
-                {
-                    user?.role === "admin" && (
-
-                        <>
-
-                            <Link
-                                className="sidebar-link"
-                                to="/admin"
-                            >
-                                Admin Dashboard
-                            </Link>
+                    <Link
+                        className="sidebar-link"
+                        to="/emby"
+                    >
+                        Emby
+                    </Link>
 
 
-                            <Link
-                                className="sidebar-link"
-                                to="/admin/users"
-                            >
-                                Users
-                            </Link>
-
-                        </>
-
-                    )
-                }
+                    <Link
+                        className="sidebar-link"
+                        to="/account"
+                    >
+                        Account
+                    </Link>
 
 
-            </nav>
+                    {
+                        user?.role === "admin" && (
 
-        </aside>
+                            <>
+
+                                <Link
+                                    className="sidebar-link"
+                                    to="/admin"
+                                >
+                                    Admin Dashboard
+                                </Link>
+
+
+                                <Link
+                                    className="sidebar-link"
+                                    to="/admin/users"
+                                >
+                                    Users
+                                </Link>
+
+                            </>
+
+                        )
+                    }
+
+                </nav>
+
+            </aside>
+
+        </>
     );
 }
 
