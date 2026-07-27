@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
+
 import api from "../../api/client";
+
+import "../../styles/admin.css";
 
 
 function AdminSettings() {
@@ -7,6 +10,7 @@ function AdminSettings() {
     const [price, setPrice] = useState("");
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(true);
+
 
 
     const loadSettings = async () => {
@@ -21,6 +25,7 @@ function AdminSettings() {
                 response.data.subscription_price.toString()
             );
 
+
         } catch (error) {
 
             console.error(
@@ -28,12 +33,15 @@ function AdminSettings() {
                 error
             );
 
+
         } finally {
 
             setLoading(false);
 
         }
+
     };
+
 
 
     const savePrice = async () => {
@@ -60,6 +68,7 @@ function AdminSettings() {
                 error
             );
 
+
             setMessage(
                 "Fel vid sparande"
             );
@@ -69,11 +78,13 @@ function AdminSettings() {
     };
 
 
+
     useEffect(() => {
 
         loadSettings();
 
     }, []);
+
 
 
 
@@ -88,60 +99,87 @@ function AdminSettings() {
     }
 
 
+
     return (
 
-        <div>
+        <div className="admin-page">
 
-            <h1>
+
+            <h1 className="admin-title">
                 Settings
             </h1>
 
 
-            <div
-                style={{
-                    marginTop: "30px"
-                }}
-            >
 
-                <label>
-                    Månadspris
-                </label>
+            <div className="admin-card">
 
 
-                <br />
+                <h2>
+                    Prenumerationspris
+                </h2>
 
 
-                <input
-                    type="number"
-                    value={price}
-                    onChange={(e) =>
-                        setPrice(e.target.value)
-                    }
-                />
+
+                <div className="admin-row">
 
 
-                <span>
-                    {" "}SEK
-                </span>
+                    <label className="admin-label">
+                        Månadspris
+                    </label>
 
 
-                <br /><br />
+                    <div>
+
+                        <input
+                            type="number"
+                            value={price}
+                            onChange={(e) =>
+                                setPrice(
+                                    e.target.value
+                                )
+                            }
+                        />
 
 
-                <button
-                    onClick={savePrice}
-                >
-                    Spara
-                </button>
+                        {" "}SEK
+
+                    </div>
+
+
+                </div>
+
+
+
+
+                <div className="admin-actions">
+
+
+                    <button
+                        className="admin-button"
+                        onClick={savePrice}
+                    >
+                        Spara
+                    </button>
+
+
+                </div>
+
+
 
 
                 {message && (
+
                     <p>
                         {message}
                     </p>
+
                 )}
 
+
+
             </div>
+
+
 
         </div>
 

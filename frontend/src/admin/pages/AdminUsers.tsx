@@ -77,6 +77,7 @@ function AdminUsers() {
 
 
 
+
     async function handleResetPassword(
         userId: number
     ) {
@@ -110,6 +111,7 @@ function AdminUsers() {
                 error
             );
 
+
             setResetPassword(
                 "Kunde inte återställa lösenord"
             );
@@ -135,6 +137,7 @@ function AdminUsers() {
 
 
 
+
     return (
 
         <div className="admin-page">
@@ -143,6 +146,8 @@ function AdminUsers() {
             <h1 className="admin-title">
                 Admin - Users
             </h1>
+
+
 
 
             {
@@ -161,6 +166,7 @@ function AdminUsers() {
 
 
 
+
             <div className="admin-table-card">
 
 
@@ -175,33 +181,41 @@ function AdminUsers() {
                                 ID
                             </th>
 
+
                             <th>
                                 Username
                             </th>
+
 
                             <th>
                                 Email
                             </th>
 
+
                             <th>
                                 Roll
                             </th>
+
 
                             <th>
                                 Status
                             </th>
 
+
                             <th>
                                 Subscription
                             </th>
+
 
                             <th>
                                 Emby
                             </th>
 
+
                             <th>
                                 Betalning
                             </th>
+
 
                             <th>
                                 Åtgärd
@@ -210,6 +224,7 @@ function AdminUsers() {
                         </tr>
 
                     </thead>
+
 
 
 
@@ -225,9 +240,7 @@ function AdminUsers() {
                                         window.location.href =
                                         `/admin/users/${user.id}`
                                     }
-                                    style={{
-                                        cursor: "pointer"
-                                    }}
+                                    className="admin-clickable-row"
                                 >
 
 
@@ -236,9 +249,11 @@ function AdminUsers() {
                                     </td>
 
 
+
                                     <td>
                                         {user.username}
                                     </td>
+
 
 
                                     <td>
@@ -246,9 +261,11 @@ function AdminUsers() {
                                     </td>
 
 
+
                                     <td className="admin-role">
                                         {user.role}
                                     </td>
+
 
 
                                     <td>
@@ -270,6 +287,8 @@ function AdminUsers() {
                                     </td>
 
 
+
+
                                     <td>
 
                                         {
@@ -285,6 +304,8 @@ function AdminUsers() {
                                     </td>
 
 
+
+
                                     <td>
 
                                         {
@@ -294,6 +315,8 @@ function AdminUsers() {
                                         }
 
                                     </td>
+
+
 
 
                                     <td>
@@ -307,9 +330,12 @@ function AdminUsers() {
                                     </td>
 
 
+
+
                                     <td>
 
                                         <button
+                                            className="admin-button"
                                             onClick={(event) => {
 
                                                 event.stopPropagation();
@@ -324,6 +350,7 @@ function AdminUsers() {
                                         </button>
 
                                     </td>
+
 
 
                                 </tr>

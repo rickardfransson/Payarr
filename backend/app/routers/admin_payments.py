@@ -1,5 +1,6 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user
@@ -7,102 +8,64 @@ from app.database.session import get_database
 from app.models.payment import Payment
 from app.models.user import User
 from app.services.payment_service import PaymentService
-from app.services.settings_service import SettingsService
-
 
 router = APIRouter(
-    prefix="/api/v1/payments",
-    tags=["Payments"],
+    prefix="/api/v1/admin/payments",
+    tags=["Admin Payments"],
 )
 
 
-class CreatePaymentRequest(BaseModel):
-    amount: float | None = None
+def require_admin(user: User):
+    if user.role != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Admin only",
+        )
 
 
-@router.post("/create")
-async def create_payment(
-    request: CreatePaymentRequest,
+@router.get("/")
+def get_payments(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_database),
 ):
 
-    amount = request.amount
-
-    if amount is None:
-        amount = SettingsService.get_subscription_price(db)
-
-
-    payment = await PaymentService.create_payment(
-        db=db,
-        user_id=current_user.id,
-        amount=amount,
-    )
-
-
-    return {
-        "id": payment.id,
-        "invoice_id": payment.invoice_id,
-        "checkout_url": payment.checkout_url,
-        "status": payment.status,
-        "amount": float(payment.amount),
-        "currency": payment.currency,
-        "provider": payment.provider,
-    }
-
-
-
-@router.get("/me")
-def get_my_payments(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_database),
-):
+    require_admin(current_user)
 
     payments = (
         db.query(Payment)
-        .filter(
-            Payment.user_id == current_user.id
-        )
-        .order_by(
-            Payment.created_at.desc()
-        )
+        .order_by(Payment.created_at.desc())
         .all()
     )
-
 
     return [
         {
             "id": payment.id,
-            "invoice_id": payment.invoice_id,
-            "checkout_url": payment.checkout_url,
+            "username": payment.user.username,
             "amount": float(payment.amount),
             "currency": payment.currency,
-            "status": payment.status,
             "provider": payment.provider,
-            "paid_at": payment.paid_at,
+            "status": payment.status,
             "created_at": payment.created_at,
+            "paid_at": payment.paid_at,
         }
         for payment in payments
     ]
 
 
-
-@router.get("/{payment_id}")
-def get_payment(
+@router.post("/complete/{payment_id}")
+def complete_payment(
     payment_id: int,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_database),
 ):
 
+    require_admin(current_user)
+
     payment = (
         db.query(Payment)
-        .filter(
-            Payment.id == payment_id,
-            Payment.user_id == current_user.id,
-        )
+        .filter(Payment.id == payment_id)
         .first()
     )
-
 
     if not payment:
         raise HTTPException(
@@ -110,15 +73,19 @@ def get_payment(
             detail="Payment not found",
         )
 
+    if payment.status != "paid":
+
+        payment.status = "paid"
+        payment.paid_at = datetime.utcnow()
+
+        db.commit()
+        db.refresh(payment)
+
+        PaymentService.complete_payment(
+            db=db,
+            payment_id=payment.id,
+        )
 
     return {
-        "id": payment.id,
-        "invoice_id": payment.invoice_id,
-        "checkout_url": payment.checkout_url,
-        "status": payment.status,
-        "amount": float(payment.amount),
-        "currency": payment.currency,
-        "provider": payment.provider,
-        "paid_at": payment.paid_at,
-        "created_at": payment.created_at,
+        "success": True,
     }

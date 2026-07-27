@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 import api from "../../api/client";
 
+import "../../styles/admin.css";
+
 
 interface EmbyUser {
 
@@ -28,6 +30,7 @@ function AdminEmbyImport() {
 
 
 
+
     async function loadUsers() {
 
         try {
@@ -37,7 +40,9 @@ function AdminEmbyImport() {
             );
 
 
-            setUsers(response.data);
+            setUsers(
+                response.data
+            );
 
 
         } catch (error) {
@@ -47,8 +52,8 @@ function AdminEmbyImport() {
                 error
             );
 
-        }
-        finally {
+
+        } finally {
 
             setLoading(false);
 
@@ -58,11 +63,14 @@ function AdminEmbyImport() {
 
 
 
+
+
     useEffect(() => {
 
         loadUsers();
 
     }, []);
+
 
 
 
@@ -77,16 +85,17 @@ function AdminEmbyImport() {
 
                 current.includes(id)
 
-                ? current.filter(
-                    item => item !== id
-                )
+                    ? current.filter(
+                        item => item !== id
+                    )
 
-                :
+                    :
 
-                [
-                    ...current,
-                    id
-                ]
+                    [
+                        ...current,
+                        id
+                    ]
+
         );
 
     }
@@ -116,9 +125,11 @@ function AdminEmbyImport() {
 
         setSelected([]);
 
+
         await loadUsers();
 
     }
+
 
 
 
@@ -138,144 +149,188 @@ function AdminEmbyImport() {
 
 
 
+
     return (
 
-        <div>
+        <div className="admin-page">
 
 
-            <h1>
+            <h1 className="admin-title">
                 Importera Emby användare
             </h1>
 
 
 
-            <table>
+
+            <div className="admin-table-card">
 
 
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            Val
-                        </th>
-
-                        <th>
-                            Username
-                        </th>
-
-                        <th>
-                            Aktiv
-                        </th>
-
-                        <th>
-                            Status
-                        </th>
-
-                    </tr>
-
-                </thead>
+                <table className="admin-table">
 
 
+                    <thead>
 
-                <tbody>
+                        <tr>
 
-
-                {
-                    users.map(
-                        user => (
-
-                        <tr
-                            key={
-                                user.emby_user_id
-                            }
-                        >
-
-                            <td>
+                            <th>
+                                Val
+                            </th>
 
 
-                            {
-                                !user.imported && (
-
-                                <input
-                                    type="checkbox"
-                                    checked={
-                                        selected.includes(
-                                            user.emby_user_id
-                                        )
-                                    }
-                                    onChange={() =>
-                                        toggleUser(
-                                            user.emby_user_id
-                                        )
-                                    }
-                                />
-
-                                )
-
-                            }
+                            <th>
+                                Username
+                            </th>
 
 
-                            </td>
+                            <th>
+                                Aktiv
+                            </th>
 
 
-
-                            <td>
-                                {user.username}
-                            </td>
-
-
-
-                            <td>
-
-                                {
-                                    user.enabled
-                                    ? "Ja"
-                                    : "Nej"
-                                }
-
-                            </td>
-
-
-
-                            <td>
-
-                                {
-                                    user.imported
-                                    ?
-                                    "Importerad"
-                                    :
-                                    "Ej importerad"
-                                }
-
-                            </td>
+                            <th>
+                                Status
+                            </th>
 
 
                         </tr>
 
-                    ))
-
-                }
-
-
-                </tbody>
-
-
-            </table>
+                    </thead>
 
 
 
 
-            <button
-                onClick={importUsers}
-                disabled={
-                    selected.length === 0
-                }
-            >
+                    <tbody>
 
-                Importera valda
 
-            </button>
+                    {
+                        users.map(
+                            user => (
+
+                            <tr
+                                key={
+                                    user.emby_user_id
+                                }
+                            >
+
+
+                                <td>
+
+
+                                {
+                                    !user.imported && (
+
+                                        <input
+                                            className="admin-checkbox"
+                                            type="checkbox"
+                                            checked={
+                                                selected.includes(
+                                                    user.emby_user_id
+                                                )
+                                            }
+                                            onChange={() =>
+                                                toggleUser(
+                                                    user.emby_user_id
+                                                )
+                                            }
+                                        />
+
+                                    )
+
+                                }
+
+
+                                </td>
+
+
+
+
+                                <td>
+                                    {user.username}
+                                </td>
+
+
+
+
+                                <td>
+
+                                    <span
+                                        className={
+                                            user.enabled
+                                                ? "admin-badge green"
+                                                : "admin-badge red"
+                                        }
+                                    >
+                                        {
+                                            user.enabled
+                                                ? "Ja"
+                                                : "Nej"
+                                        }
+                                    </span>
+
+                                </td>
+
+
+
+
+                                <td>
+
+                                    <span
+                                        className={
+                                            user.imported
+                                                ? "admin-badge green"
+                                                : "admin-badge yellow"
+                                        }
+                                    >
+                                        {
+                                            user.imported
+                                                ? "Importerad"
+                                                : "Ej importerad"
+                                        }
+                                    </span>
+
+                                </td>
+
+
+                            </tr>
+
+                        ))
+                    }
+
+
+                    </tbody>
+
+
+                </table>
+
+
+
+
+                <div className="admin-table-actions">
+
+
+                    <button
+                        className="admin-button"
+                        onClick={importUsers}
+                        disabled={
+                            selected.length === 0
+                        }
+                    >
+
+                        Importera valda
+
+                        {
+                            selected.length > 0 &&
+                            ` (${selected.length})`
+                        }
+
+                    </button>
+
+
+                </div>
+
+
+
+            </div>
 
 
         </div>

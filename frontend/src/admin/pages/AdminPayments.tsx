@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
+
 import api from "../../api/client";
+
+import "../../styles/admin.css";
 
 
 function AdminPayments() {
 
     const [payments, setPayments] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+
 
 
     const loadPayments = async () => {
@@ -30,6 +34,7 @@ function AdminPayments() {
             setLoading(false);
 
         }
+
     };
 
 
@@ -81,11 +86,13 @@ function AdminPayments() {
 
     return (
 
-        <div>
+        <div className="admin-page">
 
-            <h1>
+
+            <h1 className="admin-title">
                 Betalningar
             </h1>
+
 
 
             <p>
@@ -94,50 +101,42 @@ function AdminPayments() {
 
 
 
-            <div
-                style={{
-                    marginTop: "30px",
-                    overflowX: "auto"
-                }}
-            >
 
-                <table
-                    style={{
-                        width: "100%",
-                        borderCollapse: "collapse",
-                        background: "#fff"
-                    }}
-                >
+            <div className="admin-table-card">
+
+
+                <table className="admin-table">
+
 
                     <thead>
 
                         <tr>
 
-                            <th style={cellHeader}>
+                            <th>
                                 ID
                             </th>
 
-                            <th style={cellHeader}>
+                            <th>
                                 Användare
                             </th>
 
-                            <th style={cellHeader}>
+                            <th>
                                 Belopp
                             </th>
 
-                            <th style={cellHeader}>
+                            <th>
                                 Leverantör
                             </th>
 
-                            <th style={cellHeader}>
+                            <th>
                                 Status
                             </th>
 
-                            <th style={cellHeader}>
+                            <th>
                                 Skapad
                             </th>
 
-                            <th style={cellHeader}>
+                            <th>
                                 Åtgärd
                             </th>
 
@@ -149,90 +148,99 @@ function AdminPayments() {
 
                     <tbody>
 
-                        {payments.map(
-                            (payment) => (
+                        {
+                            payments.map(
+                                (payment) => (
 
-                            <tr key={payment.id}>
-
-                                <td style={cell}>
-                                    {payment.id}
-                                </td>
+                                <tr key={payment.id}>
 
 
-                                <td style={cell}>
-                                    {payment.username}
-                                </td>
+                                    <td>
+                                        {payment.id}
+                                    </td>
 
 
-                                <td style={cell}>
-                                    {payment.amount} {payment.currency}
-                                </td>
+
+                                    <td>
+                                        {payment.username}
+                                    </td>
 
 
-                                <td style={cell}>
-                                    {payment.provider}
-                                </td>
+
+                                    <td>
+                                        {payment.amount} {payment.currency}
+                                    </td>
 
 
-                                <td style={cell}>
 
-                                    <span
-                                        style={{
-                                            padding: "4px 10px",
-                                            borderRadius: "12px",
-                                            fontSize: "0.85rem",
-                                            background:
+                                    <td>
+                                        {payment.provider}
+                                    </td>
+
+
+
+                                    <td>
+
+                                        <span
+                                            className={
                                                 payment.status === "paid"
-                                                    ? "#d4edda"
-                                                    : "#fff3cd"
-                                        }}
-                                    >
-                                        {payment.status}
-                                    </span>
-
-                                </td>
-
-
-                                <td style={cell}>
-
-                                    {
-                                        new Date(
-                                            payment.created_at
-                                        ).toLocaleString(
-                                            "sv-SE"
-                                        )
-                                    }
-
-                                </td>
-
-
-                                <td style={cell}>
-
-                                    {payment.status !== "paid" && (
-
-                                        <button
-                                            onClick={() =>
-                                                completePayment(
-                                                    payment.id
-                                                )
+                                                    ? "admin-status active"
+                                                    : "admin-status inactive"
                                             }
                                         >
-                                            Markera betald
-                                        </button>
+                                            {payment.status}
+                                        </span>
 
-                                    )}
-
-                                </td>
+                                    </td>
 
 
-                            </tr>
 
-                        ))}
+                                    <td>
+
+                                        {
+                                            new Date(
+                                                payment.created_at
+                                            ).toLocaleString(
+                                                "sv-SE"
+                                            )
+                                        }
+
+                                    </td>
+
+
+
+                                    <td>
+
+                                        {
+                                            payment.status !== "paid" && (
+
+                                                <button
+                                                    className="admin-button"
+                                                    onClick={() =>
+                                                        completePayment(
+                                                            payment.id
+                                                        )
+                                                    }
+                                                >
+                                                    Markera betald
+                                                </button>
+
+                                            )
+                                        }
+
+                                    </td>
+
+
+                                </tr>
+
+                            ))
+                        }
 
                     </tbody>
 
 
                 </table>
+
 
             </div>
 
@@ -242,24 +250,6 @@ function AdminPayments() {
     );
 
 }
-
-
-
-const cellHeader = {
-
-    textAlign: "left" as const,
-    padding: "12px",
-    borderBottom: "2px solid #ddd"
-
-};
-
-
-const cell = {
-
-    padding: "12px",
-    borderBottom: "1px solid #eee"
-
-};
 
 
 export default AdminPayments;
