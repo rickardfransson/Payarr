@@ -5,6 +5,8 @@ import api from "../api/client";
 
 import StatCard from "../components/StatCard";
 
+import "../styles/account.css";
+
 
 function Account() {
 
@@ -76,15 +78,7 @@ function Account() {
             </h1>
 
 
-
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(3, 1fr)",
-                    gap: "20px",
-                    marginTop: "30px"
-                }}
-            >
+            <div className="account-cards">
 
                 <StatCard
                     title="Username"
@@ -113,11 +107,7 @@ function Account() {
 
 
 
-            <div
-                style={{
-                    marginTop: "40px"
-                }}
-            >
+            <div className="account-password">
 
                 <h2>
                     Byt lösenord
@@ -125,6 +115,7 @@ function Account() {
 
 
                 <input
+                    className="account-input"
                     type="password"
                     placeholder="Nuvarande lösenord"
                     value={currentPassword}
@@ -136,10 +127,8 @@ function Account() {
                 />
 
 
-                <br /><br />
-
-
                 <input
+                    className="account-input"
                     type="password"
                     placeholder="Nytt lösenord"
                     value={newPassword}
@@ -151,10 +140,8 @@ function Account() {
                 />
 
 
-                <br /><br />
-
-
                 <button
+                    className="account-button"
                     onClick={handleChangePassword}
                 >
                     Uppdatera lösenord
@@ -164,11 +151,7 @@ function Account() {
 
                 {message && (
 
-                    <p
-                        style={{
-                            color: "green"
-                        }}
-                    >
+                    <p className="account-success">
                         {message}
                     </p>
 
@@ -178,11 +161,7 @@ function Account() {
 
                 {error && (
 
-                    <p
-                        style={{
-                            color: "red"
-                        }}
-                    >
+                    <p className="account-error">
                         {error}
                     </p>
 

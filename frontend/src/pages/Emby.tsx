@@ -1,6 +1,8 @@
 import StatCard from "../components/StatCard";
 import { useOverview } from "../hooks/useOverview";
 
+import "../styles/emby.css";
+
 
 function Emby() {
 
@@ -18,9 +20,7 @@ function Emby() {
     }
 
 
-
     const emby = overview?.emby;
-
 
 
     if (!emby) {
@@ -32,7 +32,6 @@ function Emby() {
                     Emby
                 </h1>
 
-
                 <p>
                     Ingen Emby-koppling hittades.
                 </p>
@@ -43,7 +42,6 @@ function Emby() {
     }
 
 
-
     return (
         <div>
 
@@ -51,15 +49,7 @@ function Emby() {
                 Emby
             </h1>
 
-
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(2, 1fr)",
-                    gap: "20px",
-                    marginTop: "30px"
-                }}
-            >
+            <div className="emby-cards">
 
                 <StatCard
                     title="Status"
@@ -71,7 +61,6 @@ function Emby() {
                     description="Emby-konto"
                 />
 
-
                 <StatCard
                     title="Username"
                     value={
@@ -80,7 +69,6 @@ function Emby() {
                 />
 
             </div>
-
 
         </div>
     );

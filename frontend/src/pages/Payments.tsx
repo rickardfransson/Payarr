@@ -4,6 +4,8 @@ import StatCard from "../components/StatCard";
 import { useOverview } from "../hooks/useOverview";
 import { createPayment } from "../services/paymentService";
 
+import "../styles/payments.css";
+
 
 function getPaymentStatus(status: string) {
     switch (status) {
@@ -33,13 +35,13 @@ function Payments() {
 
         try {
 
-const payment = await createPayment();
+            const payment = await createPayment();
 
-console.log(payment);
+            console.log(payment);
 
-if (payment.checkout_url) {
-    window.location.href = payment.checkout_url;
-}
+            if (payment.checkout_url) {
+                window.location.href = payment.checkout_url;
+            }
 
         } catch (error) {
 
@@ -72,24 +74,15 @@ if (payment.checkout_url) {
 
             {paymentCreated && (
 
-                <div
-                    style={{
-                        marginTop: "20px",
-                        padding: "20px",
-                        borderRadius: "8px",
-                        background: "#fff3cd",
-                    }}
-                >
+                <div className="payment-created">
 
                     <h3>
                         🟡 Betalning skapad
                     </h3>
 
-
                     <p>
                         Din betalning på 100 SEK är skapad.
                     </p>
-
 
                     <p>
                         Ditt Emby-konto aktiveras automatiskt inom 15 minuter efter genomförd betalning.
@@ -100,15 +93,9 @@ if (payment.checkout_url) {
             )}
 
 
-            <p
-                style={{
-                    color: "#666",
-                    marginBottom: "30px",
-                }}
-            >
+            <p className="payments-info">
                 Här kan du se din senaste betalning och hantera din prenumeration.
             </p>
-
 
 
             {!payment ? (
@@ -119,14 +106,9 @@ if (payment.checkout_url) {
                         Ingen betalning har registrerats ännu.
                     </p>
 
-
                     <button
+                        className="payment-button"
                         onClick={handlePayment}
-                        style={{
-                            marginTop: "30px",
-                            padding: "10px 20px",
-                            cursor: "pointer",
-                        }}
                     >
                         Betala nu
                     </button>
@@ -137,26 +119,17 @@ if (payment.checkout_url) {
 
                 <>
 
-                    <div
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(3, 1fr)",
-                            gap: "20px",
-                            marginTop: "30px",
-                        }}
-                    >
+                    <div className="payments-cards">
 
                         <StatCard
                             title="Belopp"
                             value={`${payment.amount} SEK`}
                         />
 
-
                         <StatCard
                             title="Status"
                             value={getPaymentStatus(payment.status)}
                         />
-
 
                         <StatCard
                             title="Betalningsmetod"
@@ -166,32 +139,21 @@ if (payment.checkout_url) {
                     </div>
 
 
-
                     {payment.paid_at && (
 
-                        <p
-                            style={{
-                                marginTop: "20px",
-                            }}
-                        >
+                        <p className="payment-date">
                             Senast betald: {payment.paid_at}
                         </p>
 
                     )}
 
 
-
                     <button
+                        className="payment-button"
                         onClick={handlePayment}
-                        style={{
-                            marginTop: "30px",
-                            padding: "10px 20px",
-                            cursor: "pointer",
-                        }}
                     >
                         Betala nu
                     </button>
-
 
                 </>
 
