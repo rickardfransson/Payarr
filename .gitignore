@@ -9,8 +9,8 @@ node_modules/
 # VS Code
 .vscode/
 
-# Docker
-database/
+# Docker database volume
+/docker-data/
 
 # Logs
 *.log
