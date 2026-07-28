@@ -1,10 +1,10 @@
 # Payarr
 
-**Payarr** is a subscription and membership management platform designed to automate payments, subscriptions, and access control for **Emby** users.
+Payarr is a subscription and membership management platform designed to automate payments, subscriptions, and access control for Emby users.
 
 The system manages users, subscriptions, payments, and synchronization with external services through a modern web interface.
 
-Payarr is built using **FastAPI, React, PostgreSQL, and Docker**.
+Payarr is built with **FastAPI, React, PostgreSQL, and Docker**.
 
 ---
 
@@ -22,6 +22,7 @@ Payarr is built using **FastAPI, React, PostgreSQL, and Docker**.
 - First-login password change workflow
 - Admin password reset functionality
 - Responsive web interface
+- Docker-based deployment
 
 ---
 
@@ -45,10 +46,33 @@ Payarr is built using **FastAPI, React, PostgreSQL, and Docker**.
 
 - PostgreSQL 16
 
-## Deployment
+## Infrastructure
 
 - Docker
 - Docker Compose
+- Linux server deployment
+
+---
+
+# Architecture
+
+```
+                Internet
+                   |
+              Reverse Proxy
+            (Nginx / Traefik)
+                   |
+          --------------------
+          |                  |
+      Frontend            Backend
+       React              FastAPI
+                              |
+                         PostgreSQL
+                              |
+                            Emby
+                              |
+                       Payment Provider
+```
 
 ---
 
@@ -86,28 +110,39 @@ Payarr/
 
 # Configuration
 
-All configuration is stored in the root `.env` file.
+Payarr uses a single root `.env` file.
+
+The `.env` file must never be committed to GitHub.
 
 Example:
 
 ```env
 # Database
+
 POSTGRES_USER=payarr
 POSTGRES_PASSWORD=change_me
 POSTGRES_DB=payarr
 
-# JWT
+
+# Security
+
 SECRET_KEY=change_this_secret
 
+
 # Emby
+
 EMBY_URL=https://emby.example.com
 EMBY_API_KEY=your_emby_api_key
 
-# Payment Provider
+
+# Payments
+
 PAYMENT_PROVIDER=swish
 SWISH_NUMBER=0700000000
 
-# BTCPay (future production use)
+
+# BTCPay Server (production)
+
 BTCPAY_URL=https://btcpay.example.com
 BTCPAY_API_KEY=
 BTCPAY_STORE_ID=
@@ -115,9 +150,9 @@ BTCPAY_STORE_ID=
 
 ---
 
-# Running Development Environment
+# Development Environment
 
-## Start backend and database
+## Start Backend and Database
 
 ```bash
 docker compose up --build -d
@@ -132,17 +167,18 @@ http://localhost:8000
 API documentation:
 
 ```
-/docs
-/redoc
+http://localhost:8000/docs
 ```
 
 ---
 
-## Start frontend
+## Start Frontend
 
 ```bash
 cd frontend
+
 npm install
+
 npm run dev
 ```
 
@@ -180,7 +216,7 @@ Payarr uses JWT authentication.
 POST /api/v1/auth/login
 ```
 
-## Current user
+## Current User
 
 ```
 GET /api/v1/me
@@ -201,15 +237,16 @@ GET /api/v1/me
 
 Payarr integrates with Emby to control user access based on subscription status.
 
-Each Payarr user can be manually connected to an existing Emby account.
+Users are manually linked between Payarr and Emby.
 
 ## Synchronization Logic
 
 Active subscription:
 
 ```
-Payarr subscription active
-        ↓
+Subscription active
+        |
+        v
 Enable Emby access
 ```
 
@@ -217,7 +254,8 @@ Expired subscription:
 
 ```
 Subscription expired
-        ↓
+        |
+        v
 Disable Emby access
 ```
 
@@ -227,22 +265,23 @@ Background synchronization runs automatically every 15 minutes.
 
 ## Important
 
-Payarr **does not automatically create Emby accounts**.
+Payarr does **not automatically create Emby accounts**.
 
-Users are manually linked to existing Emby accounts through the administration interface.
+Users are linked manually through the administration interface.
 
 ---
 
 # Payments
 
-Payarr currently contains a basic payment implementation.
+Payarr contains payment handling functionality.
 
-Supported payment information:
+Stored payment information includes:
 
+- Provider
 - Amount
 - Currency
 - Payment status
-- Provider information
+- Invoice information
 - Checkout URL
 
 Current development provider:
@@ -251,7 +290,7 @@ Current development provider:
 Swish
 ```
 
-Future production integration:
+Production target:
 
 ```
 BTCPay Server
@@ -261,27 +300,28 @@ BTCPay Server
 
 # First Login Password Flow
 
-Imported users can receive an administrator-defined temporary password.
+Imported users can receive a temporary password.
 
-During first login:
+Flow:
 
-1. User logs in with temporary password
-2. System detects `must_change_password`
-3. User is redirected to password change page
-4. New password is saved
-5. Account becomes fully active
+1. Administrator creates or resets password
+2. User logs in
+3. System detects `must_change_password`
+4. User is redirected to password change
+5. New password is stored
+6. Account becomes active
 
 ---
 
 # Administration Features
 
-The admin panel currently supports:
+The admin panel supports:
 
 - Dashboard overview
 - User management
 - User details
 - Emby account management
-- Import users from Emby
+- Emby user import
 - Payment overview
 - Password reset
 - System settings
@@ -326,49 +366,214 @@ POST /api/v1/admin/emby/import
 
 # Production Deployment
 
-Recommended production architecture:
+## Requirements
 
-```
-Internet
-    |
-Reverse Proxy
-(Nginx / Traefik)
-    |
-Frontend
-(React)
-    |
-Backend
-(FastAPI)
-    |
-PostgreSQL
-    |
-Emby
-    |
-BTCPay Server
-```
-
-Recommended server:
+Recommended production environment:
 
 - Debian 12
 - Docker Engine
 - Docker Compose Plugin
-- HTTPS with Let's Encrypt
+- Git
+- Reverse proxy
+- HTTPS certificate
 
 ---
 
-# Deployment From GitHub
+## Install Server Dependencies
+
+```bash
+sudo apt update
+
+sudo apt install -y git docker.io docker-compose-plugin
+```
+
+Enable Docker:
+
+```bash
+sudo systemctl enable docker
+
+sudo systemctl start docker
+```
+
+---
+
+## Clone From GitHub
+
+Production deployments should always use the repository.
 
 Example:
 
 ```bash
+cd /opt
+
 git clone https://github.com/<username>/Payarr.git
 
 cd Payarr
+```
 
+---
+
+## Configure Production Environment
+
+Create environment file:
+
+```bash
 cp .env.example .env
+```
 
+Edit:
+
+```bash
+nano .env
+```
+
+Configure:
+
+- Database credentials
+- JWT secret
+- Emby connection
+- Payment provider
+- Production URLs
+
+---
+
+## Start Production Stack
+
+Build and start:
+
+```bash
 docker compose up -d --build
 ```
+
+Check containers:
+
+```bash
+docker compose ps
+```
+
+---
+
+## Database Migration
+
+Run:
+
+```bash
+docker compose exec payarr-backend alembic upgrade head
+```
+
+---
+
+## Automatic Startup After Reboot
+
+All production services should use:
+
+```yaml
+restart: unless-stopped
+```
+
+Example:
+
+```yaml
+services:
+
+  payarr-backend:
+    restart: unless-stopped
+
+  payarr-db:
+    restart: unless-stopped
+
+  payarr-frontend:
+    restart: unless-stopped
+```
+
+Docker will automatically start Payarr after server reboot.
+
+---
+
+# Updating Production
+
+Pull latest changes:
+
+```bash
+cd /opt/Payarr
+
+git pull
+```
+
+Rebuild:
+
+```bash
+docker compose up -d --build
+```
+
+Run migrations if needed:
+
+```bash
+docker compose exec payarr-backend alembic upgrade head
+```
+
+---
+
+# Logs
+
+All services:
+
+```bash
+docker compose logs -f
+```
+
+Backend:
+
+```bash
+docker compose logs -f payarr-backend
+```
+
+Frontend:
+
+```bash
+docker compose logs -f payarr-frontend
+```
+
+Database:
+
+```bash
+docker compose logs -f payarr-db
+```
+
+---
+
+# Backup
+
+Production backups should include:
+
+- PostgreSQL database
+- `.env` configuration
+- Future uploaded files
+
+Database backup example:
+
+```bash
+docker compose exec payarr-db pg_dump -U payarr payarr > backup.sql
+```
+
+Store backups outside the production server.
+
+---
+
+# Production Checklist
+
+Before going live:
+
+- [ ] HTTPS enabled
+- [ ] Strong database password configured
+- [ ] Strong JWT secret configured
+- [ ] `.env` excluded from Git
+- [ ] Database migrations completed
+- [ ] Admin account created
+- [ ] Emby connection tested
+- [ ] Payment provider configured
+- [ ] Automatic restart enabled
+- [ ] Backup strategy configured
 
 ---
 
@@ -381,76 +586,82 @@ docker compose up -d --build
 | Admin Panel | Completed |
 | Emby Synchronization | Completed |
 | First Login Password Flow | Completed |
-| Mobile UI | Completed |
+| Mobile Interface | Completed |
 | Swish Payment Flow | Basic implementation |
 | BTCPay Integration | Planned |
-| Production Deployment | In progress |
+| Production Deployment | Ready for deployment |
 
 ---
 
 # Development Notes
 
-- Frontend development is primarily done using **Notepad++**
-- Backend changes require rebuilding containers:
+- Frontend development is mainly performed using **Notepad++**
+- Backend changes require:
 
 ```bash
 docker compose up --build -d
 ```
 
-- The project uses a single root `.env` file for configuration
+- The project uses one root `.env` file
+- Deployment is based on GitHub source control
 
 ---
 
 # Legal Disclosure & Compliance
 
-Payarr is a software platform intended to assist with subscription management, user administration, payment tracking, and integration with external services such as Emby.
+Payarr is software intended to assist with subscription management, user administration, payment tracking, and integration with external services such as Emby.
 
-The software itself does not provide legal, financial, tax, accounting, or payment-processing services.
+Payarr does not provide legal, financial, tax, accounting, or payment-processing services.
 
-The operator of any Payarr installation is responsible for ensuring that their use of the system complies with all applicable laws and regulations.
+The operator of any Payarr installation is responsible for ensuring compliance with all applicable laws and regulations.
+
+---
 
 ## Operator Responsibilities
 
 The operator is responsible for:
 
-- Compliance with applicable consumer protection laws
-- Correct handling of subscriptions, renewals, cancellations, and refunds
-- Correct taxation and accounting treatment of payments
-- Compliance with payment provider requirements
-- Maintaining terms of service and privacy policies
-- Informing users how personal data is processed
-- Ensuring lawful use of connected third-party services
+- Subscription terms
+- Consumer protection requirements
+- Refund handling
+- Tax and accounting obligations
+- Payment provider compliance
+- Privacy policies
+- User communication
+- Lawful use of connected services
 
 ---
 
 ## Payments
 
-Payarr may store payment-related information and integrate with payment providers.
+Payarr may integrate with payment providers.
 
-Payarr does not act as a bank, payment institution, or regulated financial service.
+Payarr does not operate as:
 
-The operator is responsible for ensuring that the selected payment solution complies with applicable regulations.
+- A bank
+- A payment institution
+- A financial service provider
+
+The operator is responsible for selecting and configuring compliant payment solutions.
 
 ---
 
-## Personal Data & Privacy
+## Privacy & Personal Data
 
 Payarr processes user information required for:
 
-- Account management
 - Authentication
+- Account management
 - Subscription handling
 - Access control
 
 Operators are responsible for:
 
-- Determining the legal basis for processing personal data
-- Providing privacy information to users
-- Handling data requests
-- Protecting stored personal information
-- Implementing appropriate security controls
-
-Depending on jurisdiction and usage, privacy regulations such as GDPR may apply.
+- GDPR compliance where applicable
+- Privacy notices
+- Data retention policies
+- User data requests
+- Security controls
 
 ---
 
@@ -460,23 +671,19 @@ Payarr integrates with external services including:
 
 - Emby
 - Payment providers
-- Future payment infrastructure such as BTCPay Server
+- Future BTCPay Server deployments
 
-Operators are responsible for:
-
-- Reviewing third-party agreements
-- Correct configuration
-- Compliance with external service terms
+Operators are responsible for reviewing and complying with third-party agreements.
 
 ---
 
 ## No Warranty
 
-Payarr is provided as software and developed on a best-effort basis.
+Payarr is provided as software developed on a best-effort basis.
 
-No guarantee is provided that the software fulfills specific legal, commercial, security, or regulatory requirements.
+No guarantee is provided that Payarr fulfills specific legal, commercial, security, or regulatory requirements.
 
-Users and operators are responsible for evaluating whether Payarr is suitable for their intended purpose.
+The operator is responsible for evaluating whether Payarr is suitable for their intended use.
 
 ---
 
@@ -490,3 +697,9 @@ All rights reserved.
 
 ---
 
+# Author
+
+**Rickard Frandson**
+
+Payarr Project  
+2026
