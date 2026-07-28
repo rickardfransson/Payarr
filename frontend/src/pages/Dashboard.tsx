@@ -24,6 +24,11 @@ function Dashboard() {
 
 
 
+    const isUnlimitedEmby =
+        overview?.emby_access?.unlimited === true;
+
+
+
     return (
         <div>
 
@@ -38,20 +43,24 @@ function Dashboard() {
 
 
 
-<div className="dashboard-cards">
+            <div className="dashboard-cards">
 
                 <StatCard
                     title="Subscription"
                     value={
-                        overview?.subscription?.active
-                            ? "Aktiv"
-                            : "Ej aktiv"
+                        isUnlimitedEmby
+                            ? "Admin"
+                            : overview?.subscription?.active
+                                ? "Aktiv"
+                                : "Ej aktiv"
                     }
-                    description={
-                        overview?.subscription
-                            ? `Slutar ${overview.subscription.end_date}`
-                            : "Ingen prenumeration"
-                    }
+								description={
+									overview?.subscription?.unlimited
+										? "Obegränsad åtkomst"
+										: overview?.subscription
+											? `Slutar ${overview.subscription.end_date}`
+											: "Ingen prenumeration"
+								}
                 />
 
 

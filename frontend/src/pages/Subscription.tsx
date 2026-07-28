@@ -28,6 +28,9 @@ function Subscription() {
 
     const subscription = overview?.subscription;
 
+    const isUnlimitedEmby =
+        overview?.emby_access?.unlimited === true;
+
 
 
     async function handleSwishPayment() {
@@ -72,6 +75,41 @@ function Subscription() {
             setPaymentLoading(false);
 
         }
+
+    }
+
+
+
+    if (isUnlimitedEmby) {
+
+        return (
+            <div>
+
+                <h1>
+                    Subscription
+                </h1>
+
+
+                <div className="subscription-cards">
+
+                    <StatCard
+                        title="Status"
+                        value="Admin"
+                        description="♾️ Obegränsad Emby-access"
+                    />
+
+
+                    <StatCard
+                        title="Subscription"
+                        value="Ingen begränsning"
+                        description="Administratör har alltid tillgång"
+                    />
+
+                </div>
+
+
+            </div>
+        );
 
     }
 
@@ -135,7 +173,7 @@ function Subscription() {
                 <StatCard
                     title="Slutdatum"
                     value={
-                        subscription.end_date
+                        subscription.end_date ?? "-"
                     }
                 />
 

@@ -37,18 +37,43 @@ class UserOverviewService:
         )
 
 
+        is_admin = user.role == "admin"
+
+
         return {
             "user_id": user.id,
+
             "username": user.username,
+
+            "role": user.role,
+            
+            "is_admin": user.role == "admin",
+
+
+            "emby_access": {
+                "enabled": True,
+                "unlimited": is_admin,
+            },
+
 
             "subscription": (
                 {
-                    "active": user.subscription.active,
-                    "end_date": user.subscription.end_date,
+                    "active": True,
+                    "end_date": None,
+                    "unlimited": True,
                 }
-                if user.subscription
-                else None
+                if user.role == "admin"
+                else (
+                    {
+                        "active": user.subscription.active,
+                        "end_date": user.subscription.end_date,
+                        "unlimited": False,
+                    }
+                    if user.subscription
+                    else None
+                )
             ),
+
 
             "last_payment": (
                 {
@@ -60,6 +85,7 @@ class UserOverviewService:
                 if payment
                 else None
             ),
+
 
             "emby": (
                 {

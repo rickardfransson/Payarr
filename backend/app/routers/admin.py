@@ -6,6 +6,7 @@ from app.models.user import User
 from app.models.payment import Payment
 from app.core.dependencies import get_current_admin
 from app.schemas.admin_subscription import SubscriptionActivateRequest
+from app.schemas.admin_user import UserRoleUpdate
 
 from app.services.admin_subscription_service import AdminSubscriptionService
 from app.core.security import hash_password
@@ -28,7 +29,6 @@ def admin_test(
     }
 
 
-
 @router.get("/users")
 def get_users(
     db: Session = Depends(get_database),
@@ -40,9 +40,7 @@ def get_users(
         .all()
     )
 
-
     result = []
-
 
     for user in users:
 
@@ -56,7 +54,6 @@ def get_users(
             )
             .first()
         )
-
 
         result.append(
             {
@@ -95,8 +92,8 @@ def get_users(
             }
         )
 
-
     return result
+
 
 @router.post("/users/{user_id}/activate-subscription")
 def activate_subscription(
@@ -112,20 +109,18 @@ def activate_subscription(
         .first()
     )
 
-
     if not user:
-
         raise HTTPException(
             status_code=404,
             detail="User not found"
         )
-
 
     return AdminSubscriptionService.activate(
         db=db,
         user=user,
         end_date=request.end_date
     )
+
 
 @router.post("/users/{user_id}/reset-password")
 def reset_password(
@@ -161,4 +156,45 @@ def reset_password(
         "message": "Password reset",
         "temporary_password": temporary_password,
         "must_change_password": True
+    }
+
+
+@router.patch("/users/{user_id}/role")
+def update_user_role(
+    user_id: int,
+    request: UserRoleUpdate,
+    db: Session = Depends(get_database),
+    current_user: User = Depends(get_current_admin)
+):
+
+    user = (
+        db.query(User)
+        .filter(User.id == user_id)
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    if request.role not in ["user", "admin"]:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid role"
+        )
+
+    user.role = request.role
+
+    db.commit()
+    db.refresh(user)
+
+    return {
+        "message": "Role updated",
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "role": user.role
+        }
     }

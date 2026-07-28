@@ -10,10 +10,18 @@ interface Overview {
 
     username: string;
 
+    role: string;
+
+
+    emby_access: {
+        enabled: boolean;
+        unlimited: boolean;
+    };
+
 
     subscription?: {
         active: boolean;
-        end_date: string;
+        end_date: string | null;
     };
 
 

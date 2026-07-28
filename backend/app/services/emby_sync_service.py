@@ -18,6 +18,10 @@ class EmbySyncService:
         Avgör om användaren ska vara aktiv i Emby.
         """
 
+        # Admin har alltid tillgång till Emby
+        if user.role == "admin":
+            return True
+
         if user.subscription is None:
             return False
 

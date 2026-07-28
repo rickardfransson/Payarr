@@ -9,7 +9,6 @@ from app.repositories.emby_sync_log import create_sync_log
 
 class SubscriptionLifecycleService:
 
-
     @staticmethod
     def process_expired_subscriptions(
         db: Session,
@@ -26,15 +25,20 @@ class SubscriptionLifecycleService:
             .all()
         )
 
-
         processed = 0
-
 
         for subscription in expired:
 
-            subscription.active = False
-
             user = subscription.user
+
+            # Admin har alltid tillgång till Emby
+            # Subscription ska aldrig stänga av en admin
+            if user and user.role == "admin":
+                processed += 1
+                continue
+
+
+            subscription.active = False
 
 
             if user and user.emby_account:
