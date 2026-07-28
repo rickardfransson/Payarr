@@ -123,6 +123,55 @@ function AdminUsers() {
 
 
 
+    async function toggleAdmin(
+        userId: number,
+        makeAdmin: boolean
+    ) {
+
+        try {
+
+            await api.patch(
+                `/admin/users/${userId}/role`,
+                {
+                    role: makeAdmin
+                        ? "admin"
+                        : "user"
+                }
+            );
+
+
+            setUsers(current =>
+                current.map(user =>
+                    user.id === userId
+                        ? {
+                            ...user,
+                            role: makeAdmin
+                                ? "admin"
+                                : "user"
+                        }
+                        : user
+                )
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Kunde inte uppdatera roll",
+                error
+            );
+
+            alert(
+                "Kunde inte uppdatera användarroll"
+            );
+
+        }
+
+    }
+
+
+
+
 
     if (loading) {
 
@@ -263,7 +312,21 @@ function AdminUsers() {
 
 
                                     <td className="admin-role">
-                                        {user.role}
+
+                                        {
+                                            user.role === "admin"
+                                                ? (
+                                                    <span className="admin-badge admin-badge--admin">
+                                                        Admin
+                                                    </span>
+                                                )
+                                                : (
+                                                    <span className="admin-badge">
+                                                        User
+                                                    </span>
+                                                )
+                                        }
+
                                     </td>
 
 
@@ -292,13 +355,15 @@ function AdminUsers() {
                                     <td>
 
                                         {
-                                            user.subscription
-                                                ? (
-                                                    user.subscription.active
-                                                        ? "Aktiv"
-                                                        : "Inaktiv"
-                                                )
-                                                : "-"
+                                            user.role === "admin"
+                                                ? "∞"
+                                                : user.subscription
+                                                    ? (
+                                                        user.subscription.active
+                                                            ? "Aktiv"
+                                                            : "Inaktiv"
+                                                    )
+                                                    : "-"
                                         }
 
                                     </td>
@@ -334,20 +399,46 @@ function AdminUsers() {
 
                                     <td>
 
-                                        <button
-                                            className="admin-button"
-                                            onClick={(event) => {
+                                        <div className="admin-actions">
 
-                                                event.stopPropagation();
+                                            <button
+                                                className="admin-button admin-button-secondary"
+                                                onClick={(event) => {
 
-                                                handleResetPassword(
-                                                    user.id
-                                                );
+                                                    event.stopPropagation();
 
-                                            }}
-                                        >
-                                            Reset password
-                                        </button>
+                                                    toggleAdmin(
+                                                        user.id,
+                                                        user.role !== "admin"
+                                                    );
+
+                                                }}
+                                            >
+                                                {
+                                                    user.role === "admin"
+                                                        ? "Ta bort admin"
+                                                        : "Gör admin"
+                                                }
+                                            </button>
+
+
+
+                                            <button
+                                                className="admin-button"
+                                                onClick={(event) => {
+
+                                                    event.stopPropagation();
+
+                                                    handleResetPassword(
+                                                        user.id
+                                                    );
+
+                                                }}
+                                            >
+                                                Reset password
+                                            </button>
+
+                                        </div>
 
                                     </td>
 
