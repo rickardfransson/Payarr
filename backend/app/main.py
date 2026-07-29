@@ -5,9 +5,8 @@ from sqlalchemy import text
 from app.core.config import settings
 from app.core.logging import setup_logging, get_logger
 from app.database.session import engine
+
 from app.routers import payments
-
-
 from app.routers import (
     users,
     auth,
@@ -31,6 +30,8 @@ from app.services.scheduler import (
     stop_scheduler,
 )
 
+from app.services.bootstrap import ensure_admin_exists
+
 
 # Starta loggning
 setup_logging()
@@ -43,8 +44,18 @@ app = FastAPI(
     version=settings.APP_VERSION,
 )
 
+
 # CORS för frontend
-app.add_middleware( CORSMiddleware, allow_origins=settings.CORS_ORIGINS.split(",") if settings.CORS_ORIGINS else [], allow_credentials=True, allow_methods=["*"], allow_headers=["*"], )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.CORS_ORIGINS.split(",")
+    if settings.CORS_ORIGINS
+    else [],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # Routers
 app.include_router(users.router)
@@ -78,6 +89,10 @@ app.include_router(
 )
 
 app.include_router(
+    admin_settings.router,
+)
+
+app.include_router(
     payment_webhook.router,
     prefix="/api/v1",
 )
@@ -93,10 +108,6 @@ app.include_router(
 
 app.include_router(payments.router)
 
-app.include_router(
-    admin_settings.router,
-)
-
 
 @app.on_event("startup")
 def startup_event():
@@ -104,6 +115,8 @@ def startup_event():
     logger.info(
         f"{settings.APP_NAME} started"
     )
+
+    ensure_admin_exists()
 
     start_scheduler()
 

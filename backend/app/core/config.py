@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     PAYMENT_PROVIDER: str = "swish"
     
     CORS_ORIGINS: str = ""
+    
+    ADMIN_USERNAME: str = "admin"
+    ADMIN_EMAIL: str = "admin@example.com"
+    ADMIN_PASSWORD: str = "change-this-admin-password"
 
     model_config = SettingsConfigDict(
         env_file=ROOT_DIR / ".env",
