@@ -7,6 +7,7 @@ from app.core.logging import setup_logging, get_logger
 from app.database.session import engine
 from app.routers import payments
 
+
 from app.routers import (
     users,
     auth,
@@ -43,15 +44,7 @@ app = FastAPI(
 )
 
 # CORS för frontend
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app.add_middleware( CORSMiddleware, allow_origins=settings.CORS_ORIGINS.split(",") if settings.CORS_ORIGINS else [], allow_credentials=True, allow_methods=["*"], allow_headers=["*"], )
 
 # Routers
 app.include_router(users.router)

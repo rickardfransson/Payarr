@@ -28,6 +28,8 @@ class Settings(BaseSettings):
     SWISH_NUMBER: str = ""
 
     PAYMENT_PROVIDER: str = "swish"
+    
+    CORS_ORIGINS: str = ""
 
     model_config = SettingsConfigDict(
         env_file=ROOT_DIR / ".env",
