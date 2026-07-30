@@ -41,5 +41,69 @@
         min-height: 56px;
         font-size: 18px;
     }
+	
+	.swish-box {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    background: #f5f7fa;
+    text-align: center;
+}
+
+
+.swish-box h2 {
+    margin-bottom: 15px;
+}
+
+
+.swish-amount {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+
+.swish-details {
+    margin: 20px 0;
+}
+
+
+.swish-details p {
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+
+.swish-details strong {
+    font-size: 18px;
+    word-break: break-word;
+}
+
+
+@media (max-width: 600px) {
+
+    .swish-box {
+        margin: 10px;
+        padding: 15px;
+    }
+
+
+    .swish-amount {
+        font-size: 26px;
+    }
+
+
+    .swish-details strong {
+        font-size: 16px;
+    }
+
+
+    .payment-button {
+        width: 100%;
+        min-height: 48px;
+        font-size: 16px;
+    }
+
+}
 
 }

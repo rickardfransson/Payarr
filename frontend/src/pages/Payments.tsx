@@ -5,7 +5,6 @@ import { useOverview } from "../hooks/useOverview";
 import { createPayment } from "../services/paymentService";
 
 import "../styles/payments.css";
-import { openSwish } from "../utils/swish";
 
 
 function getPaymentStatus(status: string) {
@@ -29,7 +28,7 @@ function Payments() {
 
     const { overview, loading } = useOverview();
 
-    const [paymentCreated, setPaymentCreated] = useState(false);
+    const [paymentInfo, setPaymentInfo] = useState<any>(null);
 
 
     const handlePayment = async () => {
@@ -40,9 +39,7 @@ function Payments() {
 
             console.log(payment);
 
-            if (payment.checkout_url) {
-                openSwish(payment.checkout_url);
-            }
+            setPaymentInfo(payment);
 
         } catch (error) {
 
@@ -73,21 +70,48 @@ function Payments() {
             </h1>
 
 
-            {paymentCreated && (
+            {paymentInfo && (
 
-                <div className="payment-created">
+                <div className="swish-box">
 
-                    <h3>
-                        🟡 Betalning skapad
-                    </h3>
+                    <h2>
+                        🟡 Betala med Swish
+                    </h2>
 
-                    <p>
-                        Din betalning på 100 SEK är skapad.
+
+                    <p className="swish-amount">
+                        {paymentInfo.amount} {paymentInfo.currency}
                     </p>
 
-                    <p>
-                        Ditt Emby-konto aktiveras automatiskt inom 15 minuter efter genomförd betalning.
-                    </p>
+
+                    <div className="swish-details">
+
+                        <p>
+                            Swisha till:
+                        </p>
+
+                        <strong>
+                            {paymentInfo.swish_number}
+                        </strong>
+
+
+                        <p>
+                            Meddelande:
+                        </p>
+
+                        <strong>
+                            {paymentInfo.message}
+                        </strong>
+
+                    </div>
+
+
+                    <button
+                        className="payment-button"
+                    >
+                        Jag har betalat
+                    </button>
+
 
                 </div>
 
@@ -106,6 +130,7 @@ function Payments() {
                     <p>
                         Ingen betalning har registrerats ännu.
                     </p>
+
 
                     <button
                         className="payment-button"
@@ -127,10 +152,12 @@ function Payments() {
                             value={`${payment.amount} SEK`}
                         />
 
+
                         <StatCard
                             title="Status"
                             value={getPaymentStatus(payment.status)}
                         />
+
 
                         <StatCard
                             title="Betalningsmetod"

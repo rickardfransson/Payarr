@@ -1,6 +1,3 @@
-import json
-from urllib.parse import quote
-
 from app.core.config import settings
 from app.models.emby_account import EmbyAccount
 from app.models.user import User
@@ -42,33 +39,11 @@ class SwishProvider:
                     message = f"Payarr {user.username}"
 
 
-        data = json.dumps(
-            {
-                "version": 1,
-                "payee": {
-                    "value": str(settings.SWISH_NUMBER),
-                    "editable": False
-                },
-                "amount": {
-                    "value": float(f"{amount:.2f}"),
-                    "editable": False
-                },
-                "message": {
-                    "value": message,
-                    "editable": False
-                }
-            },
-            separators=(",", ":")
-        )
-
-
-        checkout_url = (
-            "swish://payment?data="
-            + quote(data, safe="")
-        )
-
-
         return {
             "id": None,
-            "checkoutLink": checkout_url,
+            "provider": "swish",
+            "amount": float(f"{amount:.2f}"),
+            "currency": currency,
+            "swish_number": settings.SWISH_NUMBER,
+            "message": message,
         }

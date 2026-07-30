@@ -8,6 +8,7 @@ from app.models.payment import Payment
 from app.models.user import User
 from app.services.payment_service import PaymentService
 from app.services.settings_service import SettingsService
+from app.core.config import settings
 
 
 router = APIRouter(
@@ -43,11 +44,12 @@ async def create_payment(
     return {
         "id": payment.id,
         "invoice_id": payment.invoice_id,
-        "checkout_url": payment.checkout_url,
         "status": payment.status,
         "amount": float(payment.amount),
         "currency": payment.currency,
         "provider": payment.provider,
+        "swish_number": settings.SWISH_NUMBER,
+        "message": f"Payarr {current_user.username}",
     }
 
 
