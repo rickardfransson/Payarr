@@ -57,12 +57,13 @@ def update_subscription_price(
     )
 
     if not setting:
-        raise HTTPException(
-            status_code=404,
-            detail="Setting not found",
+        setting = Setting(
+            key="subscription_price",
+            value=str(data.price),
         )
-
-    setting.value = str(data.price)
+        db.add(setting)
+    else:
+        setting.value = str(data.price)
 
     db.commit()
 
