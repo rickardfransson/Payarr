@@ -1,5 +1,4 @@
 from urllib.parse import quote
-import json
 
 from app.core.config import settings
 from app.models.emby_account import EmbyAccount
@@ -42,23 +41,12 @@ class SwishProvider:
                     message = f"Payarr {user.username}"
 
 
-        data = json.dumps(
-            {
-                "version": 1,
-                "payee": {
-                    "value": str(settings.SWISH_NUMBER),
-                    "editable": False
-                },
-                "amount": {
-                    "value": float(amount),
-                    "editable": False
-                },
-                "message": {
-                    "value": message,
-                    "editable": True
-                }
-            },
-            separators=(",", ":")
+        data = (
+            f"C"
+            f"{settings.SWISH_NUMBER}"
+            f";{amount:.2f}"
+            f";{message}"
+            f";0"
         )
 
 
