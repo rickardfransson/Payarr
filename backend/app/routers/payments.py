@@ -9,6 +9,7 @@ from app.models.user import User
 from app.services.payment_service import PaymentService
 from app.services.settings_service import SettingsService
 from app.core.config import settings
+from app.services.discord_service import DiscordService
 
 
 router = APIRouter(
@@ -50,6 +51,49 @@ async def create_payment(
         "provider": payment.provider,
         "swish_number": settings.SWISH_NUMBER,
         "message": f"Payarr {current_user.username}",
+    }
+
+
+
+@router.post("/{payment_id}/reported")
+async def report_payment(
+    payment_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_database),
+):
+
+    payment = (
+        db.query(Payment)
+        .filter(
+            Payment.id == payment_id,
+            Payment.user_id == current_user.id,
+        )
+        .first()
+    )
+
+
+    if not payment:
+        raise HTTPException(
+            status_code=404,
+            detail="Payment not found",
+        )
+
+
+    payment.status = "reported"
+
+    db.commit()
+    db.refresh(payment)
+
+
+    await DiscordService.send_payment_report(
+        username=current_user.username,
+        amount=float(payment.amount),
+    )
+
+
+    return {
+        "status": "reported",
+        "payment_id": payment.id,
     }
 
 
