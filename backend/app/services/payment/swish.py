@@ -1,4 +1,5 @@
 from urllib.parse import quote
+import json
 
 from app.core.config import settings
 from app.models.emby_account import EmbyAccount
@@ -29,6 +30,7 @@ class SwishProvider:
 
             if emby and emby.emby_username:
                 message = f"Payarr {emby.emby_username}"
+
             else:
                 user = (
                     db.query(User)
@@ -39,18 +41,28 @@ class SwishProvider:
                 if user:
                     message = f"Payarr {user.username}"
 
-        amount_str = f"{amount:.2f}"
 
-        data = (
-            f"{settings.SWISH_NUMBER}"
-            f";{amount_str}"
-            f";{message}"
+        data = json.dumps(
+            {
+                "payee": {
+                    "value": settings.SWISH_NUMBER,
+                },
+                "amount": {
+                    "value": f"{amount:.2f}",
+                },
+                "message": {
+                    "value": message,
+                },
+            },
+            separators=(",", ":"),
         )
+
 
         checkout_url = (
             "swish://payment?data="
             + quote(data, safe="")
         )
+
 
         return {
             "id": None,
