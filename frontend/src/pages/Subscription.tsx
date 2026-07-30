@@ -5,6 +5,7 @@ import { useOverview } from "../hooks/useOverview";
 import api from "../api/client";
 
 import "../styles/subscription.css";
+import { openSwish } from "../utils/swish";
 
 
 function Subscription() {
@@ -54,7 +55,7 @@ function Subscription() {
 
             if (checkoutUrl) {
 
-                window.location.href = checkoutUrl;
+                openSwish(checkoutUrl);
 
             }
 

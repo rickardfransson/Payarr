@@ -5,6 +5,7 @@ import { useOverview } from "../hooks/useOverview";
 import { createPayment } from "../services/paymentService";
 
 import "../styles/payments.css";
+import { openSwish } from "../utils/swish";
 
 
 function getPaymentStatus(status: string) {
@@ -40,7 +41,7 @@ function Payments() {
             console.log(payment);
 
             if (payment.checkout_url) {
-                window.location.href = payment.checkout_url;
+                openSwish(payment.checkout_url);
             }
 
         } catch (error) {
@@ -133,7 +134,7 @@ function Payments() {
 
                         <StatCard
                             title="Betalningsmetod"
-                            value="Bitcoin"
+                            value="Swish"
                         />
 
                     </div>
