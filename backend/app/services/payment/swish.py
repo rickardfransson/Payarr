@@ -1,3 +1,4 @@
+import json
 from urllib.parse import quote
 
 from app.core.config import settings
@@ -41,12 +42,23 @@ class SwishProvider:
                     message = f"Payarr {user.username}"
 
 
-        data = (
-            f"C"
-            f"{settings.SWISH_NUMBER}"
-            f";{amount:.2f}"
-            f";{message}"
-            f";0"
+        data = json.dumps(
+            {
+                "version": 1,
+                "payee": {
+                    "value": str(settings.SWISH_NUMBER),
+                    "editable": False
+                },
+                "amount": {
+                    "value": float(f"{amount:.2f}"),
+                    "editable": False
+                },
+                "message": {
+                    "value": message,
+                    "editable": False
+                }
+            },
+            separators=(",", ":")
         )
 
 
