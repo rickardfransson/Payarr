@@ -44,17 +44,21 @@ class SwishProvider:
 
         data = json.dumps(
             {
+                "version": 1,
                 "payee": {
-                    "value": settings.SWISH_NUMBER,
+                    "value": str(settings.SWISH_NUMBER),
+                    "editable": False
                 },
                 "amount": {
-                    "value": f"{amount:.2f}",
+                    "value": float(amount),
+                    "editable": False
                 },
                 "message": {
                     "value": message,
-                },
+                    "editable": True
+                }
             },
-            separators=(",", ":"),
+            separators=(",", ":")
         )
 
 
