@@ -26,3 +26,9 @@ Thumbs.db
 
 # Frontend environment 
 frontend/.env
+
+# Docker 
+database/
+
+# PostgreSQL database data
+database/
