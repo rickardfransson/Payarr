@@ -28,6 +28,7 @@ class PaymentService:
             currency="SEK",
             metadata={
                 "user_id": user_id,
+                "db": db,
             },
         )
 
