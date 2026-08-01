@@ -29,7 +29,7 @@ function App() {
 
     return (
 
-        <BrowserRouter>
+        <BrowserRouter basename="/payarr">
 
             <Routes>
 
