@@ -55,7 +55,7 @@ function Dashboard() {
                                 : "Ej aktiv"
                     }
 								description={
-									overview?.subscription?.unlimited
+									isUnlimitedEmby
 										? "Obegränsad åtkomst"
 										: overview?.subscription
 											? `Slutar ${overview.subscription.end_date}`
